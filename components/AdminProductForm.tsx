@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { COLOR_PRESETS } from '@/lib/colors'
 
 interface ProductData {
   id?: string; brand?: string; name?: string; price?: number; category?: string
@@ -23,7 +24,7 @@ export default function AdminProductForm({ initialData }: Props) {
   const [category, setCategory] = useState(initialData?.category || '가방')
   const [description, setDescription] = useState(initialData?.description || '')
   const [descriptionAlign, setDescriptionAlign] = useState(initialData?.descriptionAlign || 'center')
-  const [colors, setColors] = useState(initialData?.colors?.join(', ') || '')
+  const [selectedColors, setSelectedColors] = useState<string[]>(initialData?.colors || [])
   const [visible, setVisible] = useState(initialData?.visible ?? true)
   const [status, setStatus] = useState(initialData?.status || '구매가능')
   const [keepImages, setKeepImages] = useState<string[]>(initialData?.images || [])
@@ -44,7 +45,7 @@ export default function AdminProductForm({ initialData }: Props) {
     fd.append('category', category)
     fd.append('description', description)
     fd.append('descriptionAlign', descriptionAlign)
-    fd.append('colors', colors)
+    fd.append('colors', selectedColors.join(','))
     fd.append('visible', String(visible))
     fd.append('status', status)
     fd.append('options', JSON.stringify([]))
@@ -98,7 +99,33 @@ export default function AdminProductForm({ initialData }: Props) {
             <input type="checkbox" checked={visible} onChange={e => setVisible(e.target.checked)} /> 전시
           </label>
         </div>
-        <div><label style={labelStyle}>색상 (쉼표 구분)</label><input style={inputStyle} value={colors} onChange={e => setColors(e.target.value)} placeholder="#000000, #ffffff" /></div>
+        <div>
+          <label style={labelStyle}>색상 선택</label>
+          {selectedColors.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+              {selectedColors.map((hex, i) => {
+                const preset = COLOR_PRESETS.find(c => c.hex === hex)
+                return (
+                  <button key={i} type="button" onClick={() => setSelectedColors(prev => prev.filter((_, j) => j !== i))}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', border: '1px solid #ecebe8', background: '#fff', cursor: 'pointer', fontSize: 13 }}>
+                    <span style={{ width: 16, height: 16, borderRadius: '50%', background: hex, border: '1px solid #d6d5d1', flexShrink: 0 }} />
+                    {preset?.name || hex}
+                    <span style={{ color: '#b3261e', marginLeft: 4 }}>×</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {COLOR_PRESETS.filter(c => !selectedColors.includes(c.hex)).map(c => (
+              <button key={c.hex} type="button" onClick={() => setSelectedColors(prev => [...prev, c.hex])}
+                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', border: '1px solid #ecebe8', background: '#fbfbfa', cursor: 'pointer', fontSize: 12 }}>
+                <span style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex, border: '1px solid #d6d5d1', flexShrink: 0 }} />
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
         <div>
           <label style={labelStyle}>설명</label>
           <textarea style={{ ...inputStyle, minHeight: 120, resize: 'vertical' }} value={description} onChange={e => setDescription(e.target.value)} />
