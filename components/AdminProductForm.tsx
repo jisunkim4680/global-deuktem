@@ -136,7 +136,7 @@ export default function AdminProductForm({ initialData }: Props) {
         </div>
         <div>
           <label style={labelStyle}>또는 이미지 파일 업로드 (최대 10장)</label>
-          <input type="file" accept="image/*" multiple onChange={e => setNewFiles(e.target.files)} />
+          <input type="file" accept="image/*,.avif" multiple onChange={e => setNewFiles(e.target.files)} />
         </div>
         {error && <p style={{ color: '#b3261e', fontSize: 13 }}>{error}</p>}
         <button type="submit" disabled={submitting} style={{
