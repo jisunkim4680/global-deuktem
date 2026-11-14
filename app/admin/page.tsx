@@ -9,10 +9,34 @@ interface Product {
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([])
+  const [bulkMsg, setBulkMsg] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     fetch('/api/products').then(r => r.json()).then(setProducts)
   }, [])
+
+  async function handleCSVUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setBulkMsg('')
+
+    const fd = new FormData()
+    fd.append('csv', file)
+
+    const res = await fetch('/api/products/bulk', { method: 'POST', body: fd })
+    const data = await res.json()
+
+    if (res.ok) {
+      setBulkMsg(`${data.added}개 상품 등록 완료!${data.errors.length ? ` (오류 ${data.errors.length}건)` : ''}`)
+      fetch('/api/products').then(r => r.json()).then(setProducts)
+    } else {
+      setBulkMsg(data.error || '업로드 실패')
+    }
+    setUploading(false)
+    e.target.value = ''
+  }
 
   async function toggleVisible(id: string, visible: boolean) {
     await fetch(`/api/products/${id}`, {
@@ -43,13 +67,24 @@ export default function AdminPage() {
     <div style={{ maxWidth: 1200, margin: '0 auto', paddingTop: 40, paddingBottom: 80 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>상품 관리</h1>
-        <a href="/admin/products/new" style={{
-          background: '#141413', color: '#fbfbfa', padding: '12px 24px',
-          textDecoration: 'none', fontSize: 14, fontWeight: 600
-        }}>
-          + 상품 등록
-        </a>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <label style={{
+            background: '#fff', color: '#141413', padding: '12px 24px',
+            fontSize: 14, fontWeight: 600, border: '1px solid #141413', cursor: 'pointer',
+            opacity: uploading ? 0.6 : 1
+          }}>
+            {uploading ? '업로드 중...' : 'CSV 대량 등록'}
+            <input type="file" accept=".csv" onChange={handleCSVUpload} style={{ display: 'none' }} disabled={uploading} />
+          </label>
+          <a href="/admin/products/new" style={{
+            background: '#141413', color: '#fbfbfa', padding: '12px 24px',
+            textDecoration: 'none', fontSize: 14, fontWeight: 600
+          }}>
+            + 상품 등록
+          </a>
+        </div>
       </div>
+      {bulkMsg && <p style={{ padding: 12, background: '#f1f0ed', fontSize: 13, marginBottom: 16 }}>{bulkMsg}</p>}
       {products.length === 0 && (
         <p style={{ textAlign: 'center', color: '#8a8984', padding: 60 }}>등록된 상품이 없습니다</p>
       )}
