@@ -1,27 +1,30 @@
 import { cookies } from 'next/headers'
-import { v4 as uuidv4 } from 'uuid'
+import crypto from 'crypto'
 
-const tokens = new Map<string, string>()
+const SECRET = process.env.AUTH_SECRET || 'global-deuktem-secret-key-2026'
+
+function sign(role: string): string {
+  const sig = crypto.createHmac('sha256', SECRET).update(role).digest('hex')
+  return `${role}.${sig}`
+}
+
+function verify(token: string): string | null {
+  const [role, sig] = token.split('.')
+  if (!role || !sig) return null
+  const expected = crypto.createHmac('sha256', SECRET).update(role).digest('hex')
+  if (sig !== expected) return null
+  return role
+}
 
 export function createToken(role: string): string {
-  const token = uuidv4()
-  tokens.set(token, role)
-  return token
-}
-
-export function deleteToken(token: string): void {
-  tokens.delete(token)
-}
-
-export function getRole(token: string): string | undefined {
-  return tokens.get(token)
+  return sign(role)
 }
 
 export async function getAuthFromCookies(): Promise<{ token: string; role: string } | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get('auth-token')?.value
   if (!token) return null
-  const role = getRole(token)
+  const role = verify(token)
   if (!role) return null
   return { token, role }
 }
