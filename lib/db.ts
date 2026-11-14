@@ -1,8 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-
-const PRODUCTS_PATH = path.join(process.cwd(), 'data', 'products.json')
-const CONFIG_PATH = path.join(process.cwd(), 'data', 'config.json')
+import { put, list, del } from '@vercel/blob'
 
 export interface Product {
   id: string
@@ -21,48 +17,76 @@ export interface Product {
   updatedAt: string
 }
 
-export function getProducts(): Product[] {
-  const raw = fs.readFileSync(PRODUCTS_PATH, 'utf-8')
+const PRODUCTS_KEY = 'data/products.json'
+const CONFIG_KEY = 'data/config.json'
+
+async function readBlob(key: string): Promise<string | null> {
+  try {
+    const { blobs } = await list({ prefix: key })
+    if (blobs.length === 0) return null
+    const res = await fetch(blobs[0].url)
+    return await res.text()
+  } catch {
+    return null
+  }
+}
+
+async function writeBlob(key: string, data: string): Promise<void> {
+  // 기존 blob 삭제 후 새로 업로드
+  try {
+    const { blobs } = await list({ prefix: key })
+    for (const blob of blobs) {
+      await del(blob.url)
+    }
+  } catch {}
+  await put(key, data, { access: 'public', addRandomSuffix: false })
+}
+
+export async function getProducts(): Promise<Product[]> {
+  const raw = await readBlob(PRODUCTS_KEY)
+  if (!raw) return []
   return JSON.parse(raw)
 }
 
-export function saveProducts(products: Product[]): void {
-  fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(products, null, 2))
+export async function saveProducts(products: Product[]): Promise<void> {
+  await writeBlob(PRODUCTS_KEY, JSON.stringify(products, null, 2))
 }
 
-export function getProduct(id: string): Product | undefined {
-  return getProducts().find(p => p.id === id)
+export async function getProduct(id: string): Promise<Product | undefined> {
+  const products = await getProducts()
+  return products.find(p => p.id === id)
 }
 
-export function addProduct(product: Product): Product {
-  const products = getProducts()
+export async function addProduct(product: Product): Promise<Product> {
+  const products = await getProducts()
   products.unshift(product)
-  saveProducts(products)
+  await saveProducts(products)
   return product
 }
 
-export function updateProduct(id: string, updates: Partial<Product>): Product | null {
-  const products = getProducts()
+export async function updateProduct(id: string, updates: Partial<Product>): Promise<Product | null> {
+  const products = await getProducts()
   const index = products.findIndex(p => p.id === id)
   if (index === -1) return null
   products[index] = { ...products[index], ...updates, updatedAt: new Date().toISOString() }
-  saveProducts(products)
+  await saveProducts(products)
   return products[index]
 }
 
-export function deleteProduct(id: string): boolean {
-  const products = getProducts()
+export async function deleteProduct(id: string): Promise<boolean> {
+  const products = await getProducts()
   const filtered = products.filter(p => p.id !== id)
   if (filtered.length === products.length) return false
-  saveProducts(filtered)
+  await saveProducts(filtered)
   return true
 }
 
-export function getConfig(): { userPassword: string; adminPassword: string } {
-  const raw = fs.readFileSync(CONFIG_PATH, 'utf-8')
+export async function getConfig(): Promise<{ userPassword: string; adminPassword: string }> {
+  const raw = await readBlob(CONFIG_KEY)
+  if (!raw) return { userPassword: '1234', adminPassword: 'admin1234' }
   return JSON.parse(raw)
 }
 
-export function saveConfig(config: { userPassword: string; adminPassword: string }): void {
-  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2))
+export async function saveConfig(config: { userPassword: string; adminPassword: string }): Promise<void> {
+  await writeBlob(CONFIG_KEY, JSON.stringify(config, null, 2))
 }

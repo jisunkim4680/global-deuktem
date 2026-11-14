@@ -10,8 +10,8 @@ export async function PUT(req: NextRequest) {
   if (!newPassword || newPassword.length < 4) {
     return NextResponse.json({ error: '비밀번호는 4자 이상이어야 합니다' }, { status: 400 })
   }
-  const config = getConfig()
+  const config = await getConfig()
   config.userPassword = newPassword
-  saveConfig(config)
+  await saveConfig(config)
   return NextResponse.json({ success: true })
 }

@@ -4,7 +4,7 @@ import { createToken } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   const { password, role } = await req.json()
-  const config = getConfig()
+  const config = await getConfig()
 
   if (role === 'user' && password === config.userPassword) {
     const token = createToken('user')

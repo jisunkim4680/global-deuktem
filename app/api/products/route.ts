@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
-import fs from 'fs'
-import path from 'path'
+import { put } from '@vercel/blob'
 import { getProducts, addProduct } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 
@@ -16,7 +15,7 @@ export async function GET(req: NextRequest) {
   const brand = searchParams.get('brand')
   const category = searchParams.get('category')
 
-  let products = getProducts()
+  let products = await getProducts()
 
   if (auth.role !== 'admin') {
     products = products.filter(p => p.visible)
@@ -47,15 +46,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '브랜드, 상품명, 가격은 필수입니다' }, { status: 400 })
   }
 
+  // 파일 업로드 → Vercel Blob에 저장
   const imageFilenames: string[] = []
   const files = formData.getAll('images') as File[]
   for (const file of files) {
     if (!file.size || !file.type.startsWith('image/')) continue
     const ext = file.name.split('.').pop() || 'jpg'
-    const filename = `${uuidv4()}.${ext}`
-    const buffer = Buffer.from(await file.arrayBuffer())
-    fs.writeFileSync(path.join(process.cwd(), 'public', 'uploads', filename), buffer)
-    imageFilenames.push(filename)
+    const filename = `uploads/${uuidv4()}.${ext}`
+    const blob = await put(filename, file, { access: 'public' })
+    imageFilenames.push(blob.url)
   }
 
   const colorsStr = formData.get('colors') as string
@@ -81,6 +80,6 @@ export async function POST(req: NextRequest) {
     updatedAt: now
   }
 
-  addProduct(product)
+  await addProduct(product)
   return NextResponse.json(product, { status: 201 })
 }
