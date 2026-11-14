@@ -7,7 +7,8 @@ import { COLOR_PRESETS } from '@/lib/colors'
 interface ProductData {
   id?: string; brand?: string; name?: string; size?: string
   relatedProducts?: string[]
-  price?: number; category?: string
+  price?: number; discountPrice?: number | null; discountStart?: string; discountEnd?: string
+  category?: string
   description?: string; descriptionAlign?: string; colors?: string[]
   options?: any[]; images?: string[]; visible?: boolean; status?: string
 }
@@ -29,6 +30,9 @@ export default function AdminProductForm({ initialData }: Props) {
   const [size, setSize] = useState(initialData?.size || '')
   const [relatedIds, setRelatedIds] = useState<string[]>(initialData?.relatedProducts || [])
   const [price, setPrice] = useState(initialData?.price?.toString() || '')
+  const [discountPrice, setDiscountPrice] = useState(initialData?.discountPrice?.toString() || '')
+  const [discountStart, setDiscountStart] = useState(initialData?.discountStart || '')
+  const [discountEnd, setDiscountEnd] = useState(initialData?.discountEnd || '')
   const [category, setCategory] = useState(initialData?.category || '가방')
   const [description, setDescription] = useState(initialData?.description || '')
   const [descriptionAlign, setDescriptionAlign] = useState(initialData?.descriptionAlign || 'center')
@@ -72,6 +76,9 @@ export default function AdminProductForm({ initialData }: Props) {
     fd.append('size', size)
     fd.append('relatedProducts', JSON.stringify(relatedIds))
     fd.append('price', price)
+    fd.append('discountPrice', discountPrice)
+    fd.append('discountStart', discountStart)
+    fd.append('discountEnd', discountEnd)
     fd.append('category', category)
     fd.append('description', description)
     fd.append('descriptionAlign', descriptionAlign)
@@ -112,10 +119,18 @@ export default function AdminProductForm({ initialData }: Props) {
         <div><label style={labelStyle}>상품명 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} required /></div>
         <div><label style={labelStyle}>사이즈</label><input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="예: 스몰, 미니, 미디엄" /></div>
         <div><label style={labelStyle}>가격 *</label><input style={inputStyle} type="number" value={price} onChange={e => setPrice(e.target.value)} required /></div>
+        <div style={{ border: '1px solid #ecebe8', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <label style={{ ...labelStyle, marginBottom: 0 }}>할인 설정 (선택)</label>
+          <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인가</label><input style={inputStyle} type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} placeholder="할인가 입력 (비워두면 할인 없음)" /></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인 시작일</label><input style={inputStyle} type="date" value={discountStart} onChange={e => setDiscountStart(e.target.value)} /></div>
+            <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인 종료일</label><input style={inputStyle} type="date" value={discountEnd} onChange={e => setDiscountEnd(e.target.value)} /></div>
+          </div>
+        </div>
         <div>
           <label style={labelStyle}>카테고리</label>
           <select style={inputStyle} value={category} onChange={e => setCategory(e.target.value)}>
-            <option>가방</option><option>옷</option><option>신발</option><option>악세서리</option>
+            <option>가방</option><option>옷</option><option>신발</option><option>액세서리</option>
           </select>
         </div>
         <div>

@@ -12,7 +12,7 @@ export default function AnnouncementBar() {
       fontSize: 13, letterSpacing: '-0.01em', padding: '12px 48px',
       textAlign: 'center', lineHeight: 1.5
     }}>
-      글로벌득템에서 전 세계 인기 상품을 만나보세요.
+      퀄리티 좋은 로고리스 상품입니다. 로고 추가를 원하는 경우 카톡으로 문의 주세요.
       <button
         onClick={() => setVisible(false)}
         aria-label="닫기"

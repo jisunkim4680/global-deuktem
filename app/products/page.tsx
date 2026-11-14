@@ -6,10 +6,11 @@ import ProductGrid from '@/components/ProductGrid'
 
 interface Product {
   id: string; name: string; brand: string; price: number; category: string
+  discountPrice: number | null; discountStart: string; discountEnd: string
   images: string[]; colors: string[]; status: string
 }
 
-const CATEGORIES = ['전체', '가방', '옷', '신발', '악세서리']
+const CATEGORIES = ['전체', '가방', '옷', '신발', '액세서리']
 
 function ProductsContent() {
   const searchParams = useSearchParams()

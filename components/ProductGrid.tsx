@@ -2,6 +2,7 @@ import ProductCard from './ProductCard'
 
 interface Product {
   id: string; name: string; brand: string; price: number
+  discountPrice: number | null; discountStart: string; discountEnd: string
   images: string[]; colors: string[]; status: string
 }
 

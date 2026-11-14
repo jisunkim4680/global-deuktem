@@ -3,11 +3,13 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 import { COLOR_PRESETS } from '@/lib/colors'
+import { isDiscountActive } from '@/lib/discount'
 
 interface Product {
   id: string; name: string; brand: string; size: string
   relatedProducts: string[]
-  price: number; category: string
+  price: number; discountPrice: number | null; discountStart: string; discountEnd: string
+  category: string
   description: string; descriptionAlign: string
   images: string[]; colors: string[]; options: any[]; status: string
 }
@@ -93,7 +95,20 @@ function ProductContent() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <span style={{ fontSize: 14, color: '#6b6a66' }}>{product.brand}</span>
           <h1 style={{ fontSize: 'clamp(22px,2.2vw,28px)', fontWeight: 500, margin: 0 }}>{product.name}</h1>
-          <span style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>₩{product.price.toLocaleString()}</span>
+          {isDiscountActive(product.discountPrice, product.discountStart, product.discountEnd) ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontSize: 20, color: '#c62828', fontWeight: 600 }}>₩{product.discountPrice!.toLocaleString()}</span>
+              <span style={{ fontSize: 15, color: '#a3a29e', textDecoration: 'line-through' }}>₩{product.price.toLocaleString()}</span>
+              <span style={{ fontSize: 13, color: '#c62828', fontWeight: 700 }}>
+                {Math.round((1 - product.discountPrice! / product.price) * 100)}%
+              </span>
+            </div>
+          ) : (
+            <span style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>₩{product.price.toLocaleString()}</span>
+          )}
+          {product.discountEnd && isDiscountActive(product.discountPrice, product.discountStart, product.discountEnd) && (
+            <span style={{ fontSize: 12, color: '#6b6a66' }}>~{product.discountEnd}까지</span>
+          )}
           {product.status !== '구매가능' && (
             <span style={{ fontSize: 14, color: '#b3261e', fontWeight: 600 }}>{product.status}</span>
           )}

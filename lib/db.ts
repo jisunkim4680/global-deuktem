@@ -8,6 +8,9 @@ export interface Product {
   size: string
   relatedProducts: string[]
   price: number
+  discountPrice: number | null
+  discountStart: string
+  discountEnd: string
   description: string
   descriptionAlign: string
   colors: string[]
