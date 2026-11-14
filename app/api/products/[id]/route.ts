@@ -63,6 +63,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     status: (formData.get('status') as string) || existing.status,
     brand: brand ? brand.trim() : existing.brand,
     name: name ? name.trim() : existing.name,
+    modelName: ((formData.get('modelName') as string) || existing.modelName || '').trim(),
+    size: ((formData.get('size') as string) || existing.size || '').trim(),
     price: price ? parseInt(price, 10) : existing.price,
     description: description !== null ? description.slice(0, 3000) : existing.description,
     descriptionAlign: (formData.get('descriptionAlign') as string) || existing.descriptionAlign,

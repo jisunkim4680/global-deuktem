@@ -70,6 +70,8 @@ export async function POST(req: NextRequest) {
     status: (formData.get('status') as string) || '구매가능',
     brand: brand.trim(),
     name: name.trim(),
+    modelName: ((formData.get('modelName') as string) || '').trim(),
+    size: ((formData.get('size') as string) || '').trim(),
     price: parseInt(price, 10),
     description: ((formData.get('description') as string) || '').slice(0, 3000),
     descriptionAlign: (formData.get('descriptionAlign') as string) || 'center',

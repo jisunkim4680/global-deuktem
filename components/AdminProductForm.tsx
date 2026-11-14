@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { COLOR_PRESETS } from '@/lib/colors'
 
 interface ProductData {
-  id?: string; brand?: string; name?: string; price?: number; category?: string
+  id?: string; brand?: string; name?: string; modelName?: string; size?: string
+  price?: number; category?: string
   description?: string; descriptionAlign?: string; colors?: string[]
   options?: any[]; images?: string[]; visible?: boolean; status?: string
 }
@@ -20,6 +21,8 @@ export default function AdminProductForm({ initialData }: Props) {
 
   const [brand, setBrand] = useState(initialData?.brand || '')
   const [name, setName] = useState(initialData?.name || '')
+  const [modelName, setModelName] = useState(initialData?.modelName || '')
+  const [size, setSize] = useState(initialData?.size || '')
   const [price, setPrice] = useState(initialData?.price?.toString() || '')
   const [category, setCategory] = useState(initialData?.category || '가방')
   const [description, setDescription] = useState(initialData?.description || '')
@@ -41,6 +44,8 @@ export default function AdminProductForm({ initialData }: Props) {
     const fd = new FormData()
     fd.append('brand', brand)
     fd.append('name', name)
+    fd.append('modelName', modelName)
+    fd.append('size', size)
     fd.append('price', price)
     fd.append('category', category)
     fd.append('description', description)
@@ -80,6 +85,10 @@ export default function AdminProductForm({ initialData }: Props) {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div><label style={labelStyle}>브랜드 *</label><input style={inputStyle} value={brand} onChange={e => setBrand(e.target.value)} required /></div>
         <div><label style={labelStyle}>상품명 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} required /></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div><label style={labelStyle}>모델명 (다른 사이즈 연결용)</label><input style={inputStyle} value={modelName} onChange={e => setModelName(e.target.value)} placeholder="예: 아르코 토트백" /></div>
+          <div><label style={labelStyle}>사이즈</label><input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="예: 스몰, 미니, 미디엄" /></div>
+        </div>
         <div><label style={labelStyle}>가격 *</label><input style={inputStyle} type="number" value={price} onChange={e => setPrice(e.target.value)} required /></div>
         <div>
           <label style={labelStyle}>카테고리</label>

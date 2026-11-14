@@ -4,7 +4,8 @@ import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 
 interface Product {
-  id: string; name: string; brand: string; price: number; category: string
+  id: string; name: string; brand: string; modelName: string; size: string
+  price: number; category: string
   description: string; descriptionAlign: string
   images: string[]; colors: string[]; options: any[]; status: string
 }
@@ -12,10 +13,22 @@ interface Product {
 function ProductContent() {
   const { id } = useParams()
   const [product, setProduct] = useState<Product | null>(null)
+  const [relatedSizes, setRelatedSizes] = useState<Product[]>([])
   const [activeImage, setActiveImage] = useState(0)
 
   useEffect(() => {
-    fetch(`/api/products/${id}`).then(r => r.json()).then(setProduct)
+    fetch(`/api/products/${id}`).then(r => r.json()).then((p: Product) => {
+      setProduct(p)
+      setActiveImage(0)
+      // 같은 모델명의 다른 사이즈 상품 찾기
+      if (p.modelName) {
+        fetch('/api/products').then(r => r.json()).then((all: Product[]) => {
+          setRelatedSizes(all.filter(item => item.modelName === p.modelName && item.id !== p.id))
+        })
+      } else {
+        setRelatedSizes([])
+      }
+    })
   }, [id])
 
   if (!product) return <div style={{ padding: 60, textAlign: 'center', color: '#8a8984' }}>로딩 중...</div>
@@ -80,6 +93,30 @@ function ProductContent() {
           )}
         </div>
       </div>
+
+      {relatedSizes.length > 0 && (
+        <div style={{ marginTop: 'clamp(40px,6vw,80px)', borderTop: '1px solid #ecebe8', paddingTop: 'clamp(24px,4vw,48px)' }}>
+          <div style={{ display: 'flex', gap: 32, marginBottom: 'clamp(20px,3vw,36px)' }}>
+            <h2 style={{ fontSize: 'clamp(16px,1.4vw,20px)', fontWeight: 700, borderBottom: '2px solid #141413', paddingBottom: 8 }}>
+              다른 사이즈 보기
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(relatedSizes.length, 4)}, minmax(140px, 220px))`, gap: 'clamp(12px,2vw,24px)' }}>
+            {relatedSizes.map(item => (
+              <a key={item.id} href={`/products/${item.id}`} style={{ textDecoration: 'none', color: '#141413' }}>
+                <div style={{
+                  aspectRatio: '4/5',
+                  background: item.images[0]
+                    ? `url(${item.images[0].startsWith('http') ? item.images[0] : `/uploads/${item.images[0]}`}) center/cover`
+                    : 'repeating-linear-gradient(135deg, #f1f0ed 0 12px, #ecebe7 12px 24px)',
+                  marginBottom: 10, border: '1px solid #ecebe8'
+                }} />
+                <div style={{ fontSize: 15, textAlign: 'center' }}>{item.size || item.name}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

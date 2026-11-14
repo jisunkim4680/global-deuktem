@@ -5,6 +5,8 @@ export interface Product {
   category: string
   brand: string
   name: string
+  modelName: string
+  size: string
   price: number
   description: string
   descriptionAlign: string
