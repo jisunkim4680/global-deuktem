@@ -47,12 +47,34 @@ function ProductContent() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: 'clamp(24px,4vw,60px)' }}>
         <div>
           <div style={{
-            aspectRatio: '4/5',
+            position: 'relative', aspectRatio: '4/5',
             background: product.images[activeImage]
               ? `url(${product.images[activeImage].startsWith('http') ? product.images[activeImage] : `/uploads/${product.images[activeImage]}`}) center/cover`
               : 'repeating-linear-gradient(135deg, #f1f0ed 0 12px, #ecebe7 12px 24px)',
-            marginBottom: 12
-          }} />
+            marginBottom: 12, cursor: product.images.length > 1 ? 'pointer' : 'default'
+          }}
+            onClick={(e) => {
+              if (product.images.length <= 1) return
+              const rect = e.currentTarget.getBoundingClientRect()
+              const x = e.clientX - rect.left
+              if (x < rect.width / 2) {
+                setActiveImage(prev => prev > 0 ? prev - 1 : product.images.length - 1)
+              } else {
+                setActiveImage(prev => prev < product.images.length - 1 ? prev + 1 : 0)
+              }
+            }}
+          >
+            {product.images.length > 1 && (
+              <>
+                {activeImage > 0 && (
+                  <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 40, height: 40, background: 'rgba(255,255,255,0.8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#141413', pointerEvents: 'none' }}>‹</div>
+                )}
+                {activeImage < product.images.length - 1 && (
+                  <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 40, height: 40, background: 'rgba(255,255,255,0.8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#141413', pointerEvents: 'none' }}>›</div>
+                )}
+              </>
+            )}
+          </div>
           {product.images.length > 1 && (
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
               {product.images.map((img, i) => (
