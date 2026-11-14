@@ -1,14 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { COLOR_PRESETS } from '@/lib/colors'
 
 interface ProductData {
-  id?: string; brand?: string; name?: string; modelName?: string; size?: string
+  id?: string; brand?: string; name?: string; size?: string
+  relatedProducts?: string[]
   price?: number; category?: string
   description?: string; descriptionAlign?: string; colors?: string[]
   options?: any[]; images?: string[]; visible?: boolean; status?: string
+}
+
+interface SimpleProduct {
+  id: string; brand: string; name: string; size: string; images: string[]
 }
 
 interface Props {
@@ -21,8 +26,8 @@ export default function AdminProductForm({ initialData }: Props) {
 
   const [brand, setBrand] = useState(initialData?.brand || '')
   const [name, setName] = useState(initialData?.name || '')
-  const [modelName, setModelName] = useState(initialData?.modelName || '')
   const [size, setSize] = useState(initialData?.size || '')
+  const [relatedIds, setRelatedIds] = useState<string[]>(initialData?.relatedProducts || [])
   const [price, setPrice] = useState(initialData?.price?.toString() || '')
   const [category, setCategory] = useState(initialData?.category || '가방')
   const [description, setDescription] = useState(initialData?.description || '')
@@ -36,6 +41,26 @@ export default function AdminProductForm({ initialData }: Props) {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  // 상품 목록 (다른 사이즈 선택용)
+  const [allProducts, setAllProducts] = useState<SimpleProduct[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    fetch('/api/products').then(r => r.json()).then((products: SimpleProduct[]) => {
+      setAllProducts(products.filter(p => p.id !== initialData?.id))
+    })
+  }, [initialData?.id])
+
+  const filteredProducts = searchQuery.trim()
+    ? allProducts.filter(p =>
+        !relatedIds.includes(p.id) &&
+        (p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      ).slice(0, 8)
+    : []
+
+  const selectedRelated = allProducts.filter(p => relatedIds.includes(p.id))
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
@@ -44,8 +69,8 @@ export default function AdminProductForm({ initialData }: Props) {
     const fd = new FormData()
     fd.append('brand', brand)
     fd.append('name', name)
-    fd.append('modelName', modelName)
     fd.append('size', size)
+    fd.append('relatedProducts', JSON.stringify(relatedIds))
     fd.append('price', price)
     fd.append('category', category)
     fd.append('description', description)
@@ -85,10 +110,7 @@ export default function AdminProductForm({ initialData }: Props) {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div><label style={labelStyle}>브랜드 *</label><input style={inputStyle} value={brand} onChange={e => setBrand(e.target.value)} required /></div>
         <div><label style={labelStyle}>상품명 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} required /></div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <div><label style={labelStyle}>모델명 (다른 사이즈 연결용)</label><input style={inputStyle} value={modelName} onChange={e => setModelName(e.target.value)} placeholder="예: 아르코 토트백" /></div>
-          <div><label style={labelStyle}>사이즈</label><input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="예: 스몰, 미니, 미디엄" /></div>
-        </div>
+        <div><label style={labelStyle}>사이즈</label><input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="예: 스몰, 미니, 미디엄" /></div>
         <div><label style={labelStyle}>가격 *</label><input style={inputStyle} type="number" value={price} onChange={e => setPrice(e.target.value)} required /></div>
         <div>
           <label style={labelStyle}>카테고리</label>
@@ -145,6 +167,59 @@ export default function AdminProductForm({ initialData }: Props) {
             <option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option>
           </select>
         </div>
+
+        {/* 다른 사이즈 연결 */}
+        <div>
+          <label style={labelStyle}>다른 사이즈 연결</label>
+          {selectedRelated.length > 0 && (
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+              {selectedRelated.map(p => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1px solid #ecebe8', background: '#fff' }}>
+                  {p.images[0] && (
+                    <div style={{ width: 36, height: 45, background: `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`, flexShrink: 0 }} />
+                  )}
+                  <div style={{ fontSize: 13 }}>
+                    <div style={{ color: '#6b6a66' }}>{p.brand}</div>
+                    <div>{p.name}{p.size ? ` (${p.size})` : ''}</div>
+                  </div>
+                  <button type="button" onClick={() => setRelatedIds(prev => prev.filter(id => id !== p.id))}
+                    style={{ background: 'none', border: 0, color: '#b3261e', cursor: 'pointer', fontSize: 16, padding: '0 4px' }}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ position: 'relative' }}>
+            <input
+              style={inputStyle}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="상품명 또는 브랜드로 검색..."
+            />
+            {filteredProducts.length > 0 && (
+              <div style={{
+                position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 10,
+                border: '1px solid #ecebe8', background: '#fff', maxHeight: 260, overflowY: 'auto'
+              }}>
+                {filteredProducts.map(p => (
+                  <button key={p.id} type="button"
+                    onClick={() => { setRelatedIds(prev => [...prev, p.id]); setSearchQuery('') }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px',
+                      border: 'none', borderBottom: '1px solid #ecebe8', background: '#fff', cursor: 'pointer', textAlign: 'left'
+                    }}>
+                    {p.images[0] && (
+                      <div style={{ width: 32, height: 40, background: `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`, flexShrink: 0 }} />
+                    )}
+                    <div style={{ fontSize: 13 }}>
+                      <span style={{ color: '#6b6a66' }}>{p.brand}</span> {p.name}{p.size ? ` (${p.size})` : ''}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {isEdit && keepImages.length > 0 && (
           <div>
             <label style={labelStyle}>기존 이미지</label>

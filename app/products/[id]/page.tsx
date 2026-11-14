@@ -4,7 +4,8 @@ import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 
 interface Product {
-  id: string; name: string; brand: string; modelName: string; size: string
+  id: string; name: string; brand: string; size: string
+  relatedProducts: string[]
   price: number; category: string
   description: string; descriptionAlign: string
   images: string[]; colors: string[]; options: any[]; status: string
@@ -20,11 +21,10 @@ function ProductContent() {
     fetch(`/api/products/${id}`).then(r => r.json()).then((p: Product) => {
       setProduct(p)
       setActiveImage(0)
-      // 같은 모델명의 다른 사이즈 상품 찾기
-      if (p.modelName) {
-        fetch('/api/products').then(r => r.json()).then((all: Product[]) => {
-          setRelatedSizes(all.filter(item => item.modelName === p.modelName && item.id !== p.id))
-        })
+      if (p.relatedProducts && p.relatedProducts.length > 0) {
+        Promise.all(
+          p.relatedProducts.map(rid => fetch(`/api/products/${rid}`).then(r => r.ok ? r.json() : null))
+        ).then(results => setRelatedSizes(results.filter(Boolean)))
       } else {
         setRelatedSizes([])
       }
