@@ -10,16 +10,24 @@ interface Product {
   images: string[]; colors: string[]; status: string
 }
 
-const CATEGORIES = ['전체', '가방', '옷', '신발', '액세서리']
+const ALL_CATEGORIES = ['가방', '옷', '신발', '지갑', '액세서리', '키링']
 
 function ProductsContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
 
+  const [allProducts, setAllProducts] = useState<Product[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState(categoryParam || '전체')
   const [sort, setSort] = useState<'low' | 'high'>('low')
+
+  // 전체 상품을 한번 불러와서 카테고리별 존재 여부 확인
+  useEffect(() => {
+    fetch('/api/products').then(r => r.json()).then(setAllProducts)
+  }, [])
+
+  const visibleCategories = ['전체', ...ALL_CATEGORIES.filter(cat => allProducts.some(p => p.category === cat))]
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -38,7 +46,7 @@ function ProductsContent() {
 
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 'clamp(20px,2.4vw,36px)' }}>
         <div style={{ display: 'flex', gap: 'clamp(18px,2.6vw,40px)', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {CATEGORIES.map(cat => (
+          {visibleCategories.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}

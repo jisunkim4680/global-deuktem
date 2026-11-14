@@ -25,7 +25,9 @@ export default function SideMenu({ open, onClose, isAdmin }: SideMenuProps) {
           <a href="/products?category=가방" style={{ textDecoration: 'none' }}>가방</a>
           <a href="/products?category=옷" style={{ textDecoration: 'none' }}>옷</a>
           <a href="/products?category=신발" style={{ textDecoration: 'none' }}>신발</a>
+          <a href="/products?category=지갑" style={{ textDecoration: 'none' }}>지갑</a>
           <a href="/products?category=액세서리" style={{ textDecoration: 'none' }}>액세서리</a>
+          <a href="/products?category=키링" style={{ textDecoration: 'none' }}>키링</a>
         </nav>
         {isAdmin && (
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15, color: '#3d3c39', borderTop: '1px solid #ecebe8', paddingTop: 20 }}>

@@ -130,7 +130,7 @@ export default function AdminProductForm({ initialData }: Props) {
         <div>
           <label style={labelStyle}>카테고리</label>
           <select style={inputStyle} value={category} onChange={e => setCategory(e.target.value)}>
-            <option>가방</option><option>옷</option><option>신발</option><option>액세서리</option>
+            <option>가방</option><option>옷</option><option>신발</option><option>지갑</option><option>액세서리</option><option>키링</option>
           </select>
         </div>
         <div>
@@ -183,9 +183,9 @@ export default function AdminProductForm({ initialData }: Props) {
           </select>
         </div>
 
-        {/* 다른 사이즈 연결 */}
+        {/* 연관 상품 */}
         <div>
-          <label style={labelStyle}>다른 사이즈 연결</label>
+          <label style={labelStyle}>연관 상품</label>
           {selectedRelated.length > 0 && (
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
               {selectedRelated.map(p => (

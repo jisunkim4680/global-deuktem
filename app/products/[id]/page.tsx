@@ -142,7 +142,7 @@ function ProductContent() {
         <div style={{ marginTop: 'clamp(40px,6vw,80px)', borderTop: '1px solid #ecebe8', paddingTop: 'clamp(24px,4vw,48px)' }}>
           <div style={{ display: 'flex', gap: 32, marginBottom: 'clamp(20px,3vw,36px)' }}>
             <h2 style={{ fontSize: 'clamp(16px,1.4vw,20px)', fontWeight: 700, borderBottom: '2px solid #141413', paddingBottom: 8 }}>
-              다른 사이즈 보기
+              연관 상품
             </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(relatedSizes.length, 4)}, minmax(140px, 220px))`, gap: 'clamp(12px,2vw,24px)' }}>
@@ -155,7 +155,8 @@ function ProductContent() {
                     : 'repeating-linear-gradient(135deg, #f1f0ed 0 12px, #ecebe7 12px 24px)',
                   marginBottom: 10, border: '1px solid #ecebe8'
                 }} />
-                <div style={{ fontSize: 15, textAlign: 'center' }}>{item.size || item.name}</div>
+                <div style={{ fontSize: 13, color: '#6b6a66', textAlign: 'center' }}>{item.brand}</div>
+                <div style={{ fontSize: 14, textAlign: 'center' }}>{item.name}</div>
               </a>
             ))}
           </div>
