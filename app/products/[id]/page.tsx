@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
+import { COLOR_PRESETS } from '@/lib/colors'
 
 interface Product {
   id: string; name: string; brand: string; size: string
@@ -77,10 +78,16 @@ function ProductContent() {
           {product.colors.length > 0 && (
             <div>
               <span style={{ fontSize: 13, color: '#6b6a66', marginBottom: 8, display: 'block' }}>색상</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {product.colors.map((c, i) => (
-                  <span key={i} style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
-                ))}
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {product.colors.map((c, i) => {
+                  const preset = COLOR_PRESETS.find(p => p.hex === c)
+                  return (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <span style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
+                      <span style={{ fontSize: 11, color: '#6b6a66' }}>{preset?.name || c}</span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
