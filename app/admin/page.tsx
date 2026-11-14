@@ -38,6 +38,19 @@ export default function AdminPage() {
     e.target.value = ''
   }
 
+  function downloadCSVTemplate() {
+    const header = 'brand,name,price,category,status,colors,images,description'
+    const example = '보테가베네타,스몰 아르코 토트백,4850000,가방,구매가능,#1a1a1a|#6b4226,https://example.com/img1.jpg|https://example.com/img2.jpg,상품 설명 텍스트'
+    const csv = `${header}\n${example}`
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'global-deuktem-template.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function toggleVisible(id: string, visible: boolean) {
     await fetch(`/api/products/${id}`, {
       method: 'PATCH',
@@ -68,6 +81,12 @@ export default function AdminPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>상품 관리</h1>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <button onClick={downloadCSVTemplate} style={{
+            background: '#fff', color: '#3d3c39', padding: '12px 24px',
+            fontSize: 14, border: '1px solid #ecebe8', cursor: 'pointer'
+          }}>
+            CSV 양식 다운로드
+          </button>
           <label style={{
             background: '#fff', color: '#141413', padding: '12px 24px',
             fontSize: 14, fontWeight: 600, border: '1px solid #141413', cursor: 'pointer',
