@@ -179,6 +179,15 @@ export default function AdminPage() {
               }}>
                 {p.status}
               </button>
+              <button onClick={async () => {
+                await fetch(`/api/products/${p.id}/copy`, { method: 'POST', credentials: 'include' })
+                window.location.reload()
+              }} style={{
+                padding: '6px 12px', fontSize: 12, cursor: 'pointer', border: '1px solid #ecebe8',
+                background: 'none', color: '#141413'
+              }}>
+                복사
+              </button>
               <a href={`/admin/products/${p.id}/edit`} style={{
                 padding: '6px 12px', fontSize: 12, border: '1px solid #ecebe8', textDecoration: 'none', color: '#141413'
               }}>
