@@ -188,8 +188,15 @@ export default function AdminProductForm({ initialData }: Props) {
           <label style={labelStyle}>연관 상품</label>
           {selectedRelated.length > 0 && (
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
-              {selectedRelated.map(p => (
-                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1px solid #ecebe8', background: '#fff' }}>
+              {relatedIds.map((rid, i) => {
+                const p = selectedRelated.find(sp => sp.id === rid)
+                if (!p) return null
+                return (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid #ecebe8', background: '#fff' }}>
+                  {i > 0 && (
+                    <button type="button" onClick={() => setRelatedIds(prev => { const a = [...prev]; [a[i-1], a[i]] = [a[i], a[i-1]]; return a })}
+                      style={{ background: '#f1f0ed', border: '1px solid #ecebe8', cursor: 'pointer', fontSize: 11, width: 22, height: 22 }}>←</button>
+                  )}
                   {p.images[0] && (
                     <div style={{ width: 36, height: 45, background: `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`, flexShrink: 0 }} />
                   )}
@@ -197,10 +204,15 @@ export default function AdminProductForm({ initialData }: Props) {
                     <div style={{ color: '#6b6a66' }}>{p.brand}</div>
                     <div>{p.name}{p.size ? ` (${p.size})` : ''}</div>
                   </div>
+                  {i < relatedIds.length - 1 && (
+                    <button type="button" onClick={() => setRelatedIds(prev => { const a = [...prev]; [a[i], a[i+1]] = [a[i+1], a[i]]; return a })}
+                      style={{ background: '#f1f0ed', border: '1px solid #ecebe8', cursor: 'pointer', fontSize: 11, width: 22, height: 22 }}>→</button>
+                  )}
                   <button type="button" onClick={() => setRelatedIds(prev => prev.filter(id => id !== p.id))}
                     style={{ background: 'none', border: 0, color: '#b3261e', cursor: 'pointer', fontSize: 16, padding: '0 4px' }}>×</button>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
           <div style={{ position: 'relative' }}>
