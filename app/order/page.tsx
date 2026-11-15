@@ -8,6 +8,7 @@ import Footer from '@/components/Footer'
 
 export default function OrderPage() {
   const [items, setItems] = useState<CartItem[]>([])
+  const [nickname, setNickname] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [customsCode, setCustomsCode] = useState('')
@@ -32,6 +33,7 @@ export default function OrderPage() {
       '═══════════════════',
       '',
       '▶ 주문자 정보',
+      `닉네임: ${nickname}`,
       `이름: ${name}`,
       `연락처: ${phone}`,
       `통관부호: ${customsCode}`,
@@ -57,8 +59,8 @@ export default function OrderPage() {
   }
 
   function handleGenerate() {
-    if (!name || !phone || !customsCode || !address) {
-      alert('이름, 연락처, 통관부호, 주소를 모두 입력해주세요')
+    if (!nickname || !name || !phone || !customsCode || !address) {
+      alert('닉네임, 이름, 연락처, 통관부호, 주소를 모두 입력해주세요')
       return
     }
     setOrderText(generateOrderText())
@@ -124,6 +126,7 @@ export default function OrderPage() {
               </div>
             </div>
 
+            <div><label style={labelStyle}>닉네임 *</label><input style={inputStyle} value={nickname} onChange={e => setNickname(e.target.value)} placeholder="닉네임" /></div>
             <div><label style={labelStyle}>이름 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} placeholder="홍길동" /></div>
             <div><label style={labelStyle}>연락처 *</label><input style={inputStyle} value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-1234-5678" /></div>
             <div><label style={labelStyle}>통관부호 *</label><input style={inputStyle} value={customsCode} onChange={e => setCustomsCode(e.target.value)} placeholder="P123456789012" /></div>
