@@ -37,14 +37,18 @@ async function readBlob(key: string): Promise<string | null> {
 }
 
 async function writeBlob(key: string, data: string): Promise<void> {
-  // 기존 blob 삭제
+  // 기존 blob URL 수집
+  let oldUrls: string[] = []
   try {
     const { blobs } = await list({ prefix: key })
-    for (const blob of blobs) {
-      await del(blob.url)
-    }
+    oldUrls = blobs.map(b => b.url)
   } catch {}
-  await put(key, data, { access: 'public', addRandomSuffix: false })
+  // 새 blob 먼저 저장
+  await put(key, data, { access: 'public' })
+  // 이전 blob 삭제
+  for (const url of oldUrls) {
+    try { await del(url) } catch {}
+  }
 }
 
 export async function getProducts(): Promise<Product[]> {
