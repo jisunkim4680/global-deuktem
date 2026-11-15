@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getProducts, saveProducts } from '@/lib/db'
+import { neon } from '@neondatabase/serverless'
 import { requireAuthFromReq } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
@@ -12,14 +12,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'ids 배열이 필요합니다' }, { status: 400 })
   }
 
-  const products = await getProducts()
-  const sorted = ids
-    .map(id => products.find(p => p.id === id))
-    .filter(Boolean) as typeof products
-
-  // ids에 없는 상품은 뒤에 추가
-  const remaining = products.filter(p => !ids.includes(p.id))
-  await saveProducts([...sorted, ...remaining])
+  const sql = neon(process.env.DATABASE_URL!)
+  for (let i = 0; i < ids.length; i++) {
+    await sql`UPDATE products SET sort_order = ${i} WHERE id = ${ids[i]}`
+  }
 
   return NextResponse.json({ success: true })
 }
