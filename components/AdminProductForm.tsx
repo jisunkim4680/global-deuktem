@@ -118,10 +118,10 @@ export default function AdminProductForm({ initialData }: Props) {
         <div><label style={labelStyle}>브랜드 *</label><input style={inputStyle} value={brand} onChange={e => setBrand(e.target.value)} required /></div>
         <div><label style={labelStyle}>상품명 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} required /></div>
         <div><label style={labelStyle}>사이즈</label><input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="예: 스몰, 미니, 미디엄" /></div>
-        <div><label style={labelStyle}>가격 *</label><input style={inputStyle} type="number" value={price} onChange={e => setPrice(e.target.value)} required /></div>
+        <div><label style={labelStyle}>가격 *</label><input style={inputStyle} type="text" inputMode="numeric" pattern="[0-9]*" value={price} onChange={e => setPrice(e.target.value.replace(/[^0-9]/g, ''))} required /></div>
         <div style={{ border: '1px solid #ecebe8', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <label style={{ ...labelStyle, marginBottom: 0 }}>할인 설정 (선택)</label>
-          <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인가</label><input style={inputStyle} type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} placeholder="할인가 입력 (비워두면 할인 없음)" /></div>
+          <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인가</label><input style={inputStyle} type="text" inputMode="numeric" pattern="[0-9]*" value={discountPrice} onChange={e => setDiscountPrice(e.target.value.replace(/[^0-9]/g, ''))} placeholder="할인가 입력 (비워두면 할인 없음)" /></div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인 시작일</label><input style={inputStyle} type="date" value={discountStart} onChange={e => setDiscountStart(e.target.value)} /></div>
             <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>할인 종료일</label><input style={inputStyle} type="date" value={discountEnd} onChange={e => setDiscountEnd(e.target.value)} /></div>
