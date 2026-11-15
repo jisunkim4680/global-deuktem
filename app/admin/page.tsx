@@ -97,6 +97,25 @@ export default function AdminPage() {
     setProducts(prev => prev.filter(p => p.id !== id))
   }
 
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
+
+  async function handleDrop(toIdx: number) {
+    if (dragIdx === null || dragIdx === toIdx) { setDragIdx(null); setDragOverIdx(null); return }
+    const newProducts = [...products]
+    const [moved] = newProducts.splice(dragIdx, 1)
+    newProducts.splice(toIdx, 0, moved)
+    setProducts(newProducts)
+    setDragIdx(null)
+    setDragOverIdx(null)
+    // 서버에 순서 저장
+    await fetch('/api/products/reorder', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: newProducts.map(p => p.id) })
+    })
+  }
+
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', paddingTop: 40, paddingBottom: 80 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
@@ -148,12 +167,26 @@ export default function AdminPage() {
         <p style={{ textAlign: 'center', color: '#8a8984', padding: 60 }}>등록된 상품이 없습니다</p>
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, border: filtered.length ? '1px solid #ecebe8' : 'none' }}>
-        {filtered.map(p => (
-          <div key={p.id} style={{
-            display: 'grid', gridTemplateColumns: '60px 1fr auto',
+        {filtered.map((p, idx) => {
+          const canDrag = !search && !filterCategory && !filterBrand
+          const productIdx = canDrag ? products.findIndex(pp => pp.id === p.id) : -1
+          return (
+          <div key={p.id}
+            draggable={canDrag}
+            onDragStart={() => canDrag && setDragIdx(productIdx)}
+            onDragOver={e => { if (canDrag) { e.preventDefault(); setDragOverIdx(productIdx) } }}
+            onDrop={() => canDrag && handleDrop(productIdx)}
+            onDragEnd={() => { setDragIdx(null); setDragOverIdx(null) }}
+            style={{
+            display: 'grid', gridTemplateColumns: canDrag ? '24px 60px 1fr auto' : '60px 1fr auto',
             alignItems: 'center', gap: 16, padding: 16,
-            borderBottom: '1px solid #ecebe8', background: '#fff'
+            borderBottom: '1px solid #ecebe8',
+            background: dragOverIdx === productIdx ? '#f1f0ed' : '#fff',
+            opacity: dragIdx === productIdx ? 0.5 : 1,
+            cursor: canDrag ? 'grab' : 'default',
+            transition: 'background 0.15s'
           }}>
+            {canDrag && <span style={{ fontSize: 16, color: '#a3a29e', userSelect: 'none' }}>⠿</span>}
             <div style={{
               width: 60, height: 75,
               background: p.images[0]
@@ -201,7 +234,8 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
