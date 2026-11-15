@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 import { COLOR_PRESETS } from '@/lib/colors'
 import { isDiscountActive } from '@/lib/discount'
+import { addToCart } from '@/lib/cart'
 
 interface Product {
   id: string; name: string; brand: string; size: string
@@ -19,6 +20,8 @@ function ProductContent() {
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedSizes, setRelatedSizes] = useState<Product[]>([])
   const [activeImage, setActiveImage] = useState(0)
+  const [selectedColor, setSelectedColor] = useState('')
+  const [addedMsg, setAddedMsg] = useState('')
 
   useEffect(() => {
     fetch(`/api/products/${id}`).then(r => r.json()).then((p: Product) => {
@@ -118,11 +121,13 @@ function ProductContent() {
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 {product.colors.map((c, i) => {
                   const preset = COLOR_PRESETS.find(p => p.hex === c)
+                  const isSelected = selectedColor === c
                   return (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
-                      <span style={{ fontSize: 11, color: '#6b6a66' }}>{preset?.name || c}</span>
-                    </div>
+                    <button key={i} type="button" onClick={() => setSelectedColor(c)}
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                      <span style={{ width: 28, height: 28, borderRadius: '50%', background: c, border: isSelected ? '2px solid #141413' : '1px solid #d6d5d1', outline: isSelected ? '2px solid #fff' : 'none', outlineOffset: -3 }} />
+                      <span style={{ fontSize: 11, color: isSelected ? '#141413' : '#6b6a66', fontWeight: isSelected ? 600 : 400 }}>{preset?.name || c}</span>
+                    </button>
                   )
                 })}
               </div>
@@ -135,6 +140,37 @@ function ProductContent() {
               </p>
             </div>
           )}
+
+          <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid #ecebe8' }}>
+            {addedMsg && <p style={{ fontSize: 13, color: '#3f6b3f', marginBottom: 12 }}>{addedMsg}</p>}
+            <button
+              onClick={() => {
+                const preset = COLOR_PRESETS.find(p => p.hex === selectedColor)
+                const hasDiscount = isDiscountActive(product.discountPrice, product.discountStart, product.discountEnd)
+                addToCart({
+                  productId: product.id,
+                  brand: product.brand,
+                  name: product.name,
+                  price: product.price,
+                  discountPrice: product.discountPrice,
+                  discountStart: product.discountStart,
+                  discountEnd: product.discountEnd,
+                  color: selectedColor,
+                  colorName: preset?.name || selectedColor || '',
+                  image: product.images[0] || '',
+                  quantity: 1
+                })
+                setAddedMsg('장바구니에 담았습니다')
+                setTimeout(() => setAddedMsg(''), 2000)
+              }}
+              style={{
+                width: '100%', padding: '16px', fontSize: 15, fontWeight: 600,
+                background: '#141413', color: '#fbfbfa', border: 'none', cursor: 'pointer'
+              }}
+            >
+              장바구니 담기
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SideMenu from './SideMenu'
+import { getCartCount } from '@/lib/cart'
 
 interface HeaderProps {
   isAdmin?: boolean
@@ -10,7 +11,14 @@ interface HeaderProps {
 
 export default function Header({ isAdmin }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
   const router = useRouter()
+
+  useEffect(() => {
+    setCartCount(getCartCount())
+    const interval = setInterval(() => setCartCount(getCartCount()), 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -36,6 +44,11 @@ export default function Header({ isAdmin }: HeaderProps) {
           글로벌득템
         </a>
         <nav style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 'clamp(12px,2.6vw,44px)', fontSize: 15 }}>
+          {!isAdmin && (
+            <a href="/cart" style={{ textDecoration: 'none', color: '#141413', fontSize: 15, display: 'flex', gap: 4 }}>
+              장바구니{cartCount > 0 && <span style={{ fontVariantNumeric: 'tabular-nums' }}>({cartCount})</span>}
+            </a>
+          )}
           <button onClick={handleLogout} style={{ background: 'none', border: 0, padding: '8px 0', fontSize: 15, cursor: 'pointer' }}>
             로그아웃
           </button>
