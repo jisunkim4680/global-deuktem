@@ -31,10 +31,10 @@ function ProductsContent() {
 
   const visibleCategories = ['전체', ...ALL_CATEGORIES.filter(cat => allProducts.some(p => p.category === cat))]
 
-  // 선택된 카테고리의 브랜드 목록
+  // 브랜드 목록 (카테고리 선택 시 해당 카테고리, 전체일 때 모든 브랜드)
   const categoryBrands = activeCategory !== '전체'
     ? [...new Set(allProducts.filter(p => p.category === activeCategory).map(p => p.brand))].sort()
-    : []
+    : [...new Set(allProducts.map(p => p.brand))].sort()
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -69,7 +69,7 @@ function ProductsContent() {
             </button>
           ))}
         </div>
-        {categoryBrands.length > 1 && (
+        {categoryBrands.length > 0 && (
           <div style={{ display: 'flex', gap: 'clamp(12px,2vw,24px)', overflowX: 'auto', scrollbarWidth: 'none', width: '100%' }}>
             <button
               onClick={() => setActiveBrand('')}
