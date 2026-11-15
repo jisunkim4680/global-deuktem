@@ -19,6 +19,7 @@ export const COLOR_PRESETS: { name: string; hex: string }[] = [
   { name: '네이비', hex: '#1b2a4a' },
   { name: '블루', hex: '#2b5797' },
   { name: '그린', hex: '#3f6b3f' },
+  { name: '올리브', hex: '#6b6b3a' },
   { name: '에토프', hex: '#8b7d6b' },
   { name: '옐로우', hex: '#f0c040' },
   { name: '코랄', hex: '#f08080' },
