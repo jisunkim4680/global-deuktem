@@ -11,6 +11,7 @@ export default function OrderPage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [customsCode, setCustomsCode] = useState('')
+  const [address, setAddress] = useState('')
   const [memo, setMemo] = useState('')
   const [copied, setCopied] = useState(false)
   const [orderText, setOrderText] = useState('')
@@ -34,6 +35,7 @@ export default function OrderPage() {
       `이름: ${name}`,
       `연락처: ${phone}`,
       `통관부호: ${customsCode}`,
+      `주소: ${address}`,
       ...(memo ? [`메모: ${memo}`] : []),
       '',
       '▶ 주문 상품',
@@ -55,8 +57,8 @@ export default function OrderPage() {
   }
 
   function handleGenerate() {
-    if (!name || !phone || !customsCode) {
-      alert('이름, 연락처, 통관부호를 모두 입력해주세요')
+    if (!name || !phone || !customsCode || !address) {
+      alert('이름, 연락처, 통관부호, 주소를 모두 입력해주세요')
       return
     }
     setOrderText(generateOrderText())
@@ -125,6 +127,7 @@ export default function OrderPage() {
             <div><label style={labelStyle}>이름 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} placeholder="홍길동" /></div>
             <div><label style={labelStyle}>연락처 *</label><input style={inputStyle} value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-1234-5678" /></div>
             <div><label style={labelStyle}>통관부호 *</label><input style={inputStyle} value={customsCode} onChange={e => setCustomsCode(e.target.value)} placeholder="P123456789012" /></div>
+            <div><label style={labelStyle}>주소 *</label><input style={inputStyle} value={address} onChange={e => setAddress(e.target.value)} placeholder="서울시 강남구 ..." /></div>
             <div><label style={labelStyle}>메모 (선택)</label><textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={memo} onChange={e => setMemo(e.target.value)} placeholder="요청사항이 있으면 입력해주세요" /></div>
 
             <button onClick={handleGenerate} style={{
