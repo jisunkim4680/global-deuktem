@@ -45,9 +45,9 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
         SALE
       </div>
 
-      <div style={{ padding: 'clamp(14px,1.6vw,24px) clamp(24px,3vw,48px)', position: 'relative' }}>
+      <div style={{ padding: 'clamp(12px,1.3vw,20px) clamp(24px,3vw,48px)', position: 'relative' }}>
         {/* 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(10px,1.2vw,16px)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(8px,1vw,14px)' }}>
           <span style={{
             fontSize: 'clamp(11px,1vw,13px)', fontWeight: 600,
             color: '#d4a574', letterSpacing: '0.2em', textTransform: 'uppercase'
@@ -67,7 +67,7 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
             <a href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'clamp(20px,3vw,40px)', alignItems: 'center' }}>
               <div style={{ position: 'relative' }}>
                 <div style={{
-                  aspectRatio: '16/9',
+                  aspectRatio: '2/1',
                   background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   boxShadow: '24px 24px 60px rgba(0,0,0,0.5)'
                 }} />
@@ -112,7 +112,7 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
               <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', position: 'relative', marginTop: i === 1 ? 20 : 0 }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
-                    aspectRatio: '16/9',
+                    aspectRatio: '2/1',
                     background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   }} />
                   <div style={{
@@ -147,11 +147,11 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
             {products.map(p => (
               <a key={p.id} href={`/products/${p.id}`} style={{
                 textDecoration: 'none', color: '#fbfbfa', flexShrink: 0,
-                width: 'clamp(150px, 16vw, 200px)'
+                width: 'clamp(140px, 15vw, 190px)'
               }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
-                    aspectRatio: '16/9',
+                    aspectRatio: '2/1',
                     background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   }} />
                   <div style={{
