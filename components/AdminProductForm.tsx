@@ -237,15 +237,26 @@ export default function AdminProductForm({ initialData }: Props) {
 
         {isEdit && keepImages.length > 0 && (
           <div>
-            <label style={labelStyle}>기존 이미지</label>
+            <label style={labelStyle}>기존 이미지 (드래그 또는 화살표로 순서 변경)</label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {keepImages.map((img, i) => (
-                <div key={i} style={{ position: 'relative' }}>
-                  <div style={{ width: 80, height: 100, background: `url(${img.startsWith('http') ? img : `/uploads/${img}`}) center/cover`, border: '1px solid #ecebe8' }} />
+                <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <div style={{ width: 80, height: 100, background: `url(${img.startsWith('http') ? img : `/uploads/${img}`}) center/cover`, border: i === 0 ? '2px solid #141413' : '1px solid #ecebe8' }} />
+                  <div style={{ display: 'flex', gap: 2 }}>
+                    {i > 0 && (
+                      <button type="button" onClick={() => setKeepImages(prev => { const a = [...prev]; [a[i-1], a[i]] = [a[i], a[i-1]]; return a })}
+                        style={{ width: 24, height: 20, background: '#f1f0ed', border: '1px solid #ecebe8', cursor: 'pointer', fontSize: 11 }}>←</button>
+                    )}
+                    {i < keepImages.length - 1 && (
+                      <button type="button" onClick={() => setKeepImages(prev => { const a = [...prev]; [a[i], a[i+1]] = [a[i+1], a[i]]; return a })}
+                        style={{ width: 24, height: 20, background: '#f1f0ed', border: '1px solid #ecebe8', cursor: 'pointer', fontSize: 11 }}>→</button>
+                    )}
+                  </div>
                   <button type="button" onClick={() => setKeepImages(prev => prev.filter((_, j) => j !== i))}
                     style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: '50%', background: '#b3261e', color: '#fff', border: 0, fontSize: 12, cursor: 'pointer' }}>
                     ×
                   </button>
+                  {i === 0 && <span style={{ fontSize: 10, color: '#6b6a66' }}>대표</span>}
                 </div>
               ))}
             </div>
