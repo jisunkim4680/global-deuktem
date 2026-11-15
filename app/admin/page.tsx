@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 interface Product {
   id: string; name: string; brand: string; price: number; category: string
-  images: string[]; visible: boolean; status: string; updatedAt: string
+  colors: string[]; images: string[]; visible: boolean; status: string; updatedAt: string
 }
 
 export default function AdminPage() {
@@ -196,7 +196,32 @@ export default function AdminPage() {
             <div>
               <div style={{ fontSize: 13, color: '#6b6a66' }}>{p.brand} · {p.category}</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>{p.name}</div>
-              <div style={{ fontSize: 14, color: '#3d3c39' }}>₩{p.price.toLocaleString()}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 14, color: '#3d3c39' }}>₩</span>
+                <input
+                  type="text" inputMode="numeric" defaultValue={p.price}
+                  onBlur={async (e) => {
+                    const newPrice = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10)
+                    if (!newPrice || newPrice === p.price) return
+                    await fetch(`/api/products/${p.id}`, {
+                      method: 'PATCH', credentials: 'include',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ price: newPrice })
+                    })
+                    setProducts(prev => prev.map(pp => pp.id === p.id ? { ...pp, price: newPrice } : pp))
+                  }}
+                  style={{ width: 90, padding: '2px 4px', fontSize: 14, color: '#3d3c39', border: '1px solid transparent', outline: 'none', background: 'transparent' }}
+                  onFocus={e => e.target.style.borderColor = '#ecebe8'}
+                  onBlurCapture={e => e.target.style.borderColor = 'transparent'}
+                />
+              </div>
+              {p.colors && p.colors.length > 0 && (
+                <div style={{ display: 'flex', gap: 3, marginTop: 4 }}>
+                  {p.colors.map((c: string, ci: number) => (
+                    <span key={ci} style={{ width: 10, height: 10, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
+                  ))}
+                </div>
+              )}
               {p.updatedAt && <div style={{ fontSize: 11, color: '#a3a29e' }}>수정: {new Date(p.updatedAt).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>}
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>

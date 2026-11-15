@@ -88,6 +88,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const updates: any = {}
   if (body.visible !== undefined) updates.visible = body.visible
   if (body.status !== undefined) updates.status = body.status
+  if (body.price !== undefined) updates.price = body.price
 
   const updated = await updateProduct(id, updates)
   if (!updated) return NextResponse.json({ error: '상품을 찾을 수 없습니다' }, { status: 404 })
