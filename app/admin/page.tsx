@@ -45,13 +45,13 @@ export default function AdminPage() {
     const data = await res.json()
 
     if (res.ok) {
-      setBulkMsg(`${data.added}개 상품 등록 완료!${data.errors.length ? ` (오류 ${data.errors.length}건)` : ''}`)
-      fetch('/api/products').then(r => r.json()).then(setProducts)
+      alert(`${data.added}개 상품 등록 완료!${data.errors.length ? ` (오류 ${data.errors.length}건)` : ''}`)
+      window.location.reload()
     } else {
       setBulkMsg(data.error || '업로드 실패')
+      setUploading(false)
+      e.target.value = ''
     }
-    setUploading(false)
-    e.target.value = ''
   }
 
   function downloadCSVTemplate() {

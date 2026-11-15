@@ -98,7 +98,7 @@ export default function AdminProductForm({ initialData }: Props) {
 
     const res = await fetch(url, { method, body: fd })
     if (res.ok) {
-      router.push('/admin')
+      window.location.href = '/admin'
     } else {
       const data = await res.json()
       setError(data.error || '저장에 실패했습니다')
