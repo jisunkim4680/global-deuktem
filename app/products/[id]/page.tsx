@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import { COLOR_PRESETS } from '@/lib/colors'
 import { isDiscountActive } from '@/lib/discount'
@@ -21,6 +22,7 @@ function ProductContent() {
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedSizes, setRelatedSizes] = useState<Product[]>([])
   const [activeImage, setActiveImage] = useState(0)
+  const router = useRouter()
   const [selectedColor, setSelectedColor] = useState('')
   const [addedMsg, setAddedMsg] = useState('')
 
@@ -40,11 +42,13 @@ function ProductContent() {
     })
   }, [id])
 
-  if (!product) return <><Header /><div style={{ padding: 60, textAlign: 'center', color: '#8a8984' }}>로딩 중...</div></>
+  const handleSearch = (q: string) => { if (q) router.push(`/products?search=${encodeURIComponent(q)}`) }
+
+  if (!product) return <><Header showSearch onSearch={handleSearch} /><div style={{ padding: 60, textAlign: 'center', color: '#8a8984' }}>로딩 중...</div></>
 
   return (
     <>
-    <Header />
+    <Header showSearch onSearch={handleSearch} />
     <main style={{ padding: '0 clamp(16px,2.4vw,36px)' }}>
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(24px,4vw,60px) 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 14, marginBottom: 24 }}>

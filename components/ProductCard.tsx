@@ -34,10 +34,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           {!product.images[0] && (
             <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 11, color: '#8a8984' }}>이미지 없음</span>
           )}
-          {product.status !== '구매가능' && (
-            <span style={{ position: 'absolute', left: 12, top: 12, fontSize: 12, color: '#fff', background: product.status === '예약중' ? '#2b5797' : '#6b6a66', padding: '2px 8px' }}>
-              {product.status}{product.status === '예약중' && product.reservationEnd ? ` ~${product.reservationEnd.replace(/-/g, '.')}` : ''}
-            </span>
+          {product.status === '예약중' && (
+            <>
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(43,87,151,0.08)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', left: 0, top: 12, background: '#2b5797', color: '#fff', padding: '5px 14px 5px 12px', fontSize: 12, fontWeight: 600, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <span>예약중</span>
+                {product.reservationEnd && <span style={{ fontSize: 10, opacity: 0.8 }}>~{product.reservationEnd.replace(/-/g, '.')}</span>}
+              </div>
+            </>
+          )}
+          {product.status === '품절' && (
+            <span style={{ position: 'absolute', left: 12, top: 12, fontSize: 12, color: '#fff', background: '#6b6a66', padding: '3px 10px' }}>품절</span>
           )}
           {hasDiscount && (
             <span style={{ position: 'absolute', right: 12, top: 12, fontSize: 12, fontWeight: 700, color: '#fff', background: '#c62828', padding: '3px 8px' }}>
