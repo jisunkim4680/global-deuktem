@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { COLOR_PRESETS } from '@/lib/colors'
 
 interface Product {
   id: string; name: string; brand: string; price: number; category: string
@@ -216,10 +217,16 @@ export default function AdminPage() {
                 />
               </div>
               {p.colors && p.colors.length > 0 && (
-                <div style={{ display: 'flex', gap: 3, marginTop: 4 }}>
-                  {p.colors.map((c: string, ci: number) => (
-                    <span key={ci} style={{ width: 10, height: 10, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
-                  ))}
+                <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                  {p.colors.map((c: string, ci: number) => {
+                    const preset = COLOR_PRESETS.find(cp => cp.hex === c)
+                    return (
+                      <span key={ci} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#6b6a66' }}>
+                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: c, border: '1px solid #d6d5d1' }} />
+                        {preset?.name || c}
+                      </span>
+                    )
+                  })}
                 </div>
               )}
               {p.updatedAt && <div style={{ fontSize: 11, color: '#a3a29e' }}>수정: {new Date(p.updatedAt).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>}
