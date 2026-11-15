@@ -81,6 +81,13 @@ function ProductsContent() {
                   <span style={{ fontSize: 14, fontWeight: 600 }}>₩{p.discountPrice!.toLocaleString()}</span>
                   <span style={{ fontSize: 12, color: '#6b6a66', textDecoration: 'line-through' }}>₩{p.price.toLocaleString()}</span>
                 </div>
+                {(p.discountStart || p.discountEnd) && (
+                  <div style={{ fontSize: 11, color: '#6b6a66', marginTop: 4 }}>
+                    {p.discountStart && p.discountEnd
+                      ? `${p.discountStart.replace(/-/g, '.')} ~ ${p.discountEnd.replace(/-/g, '.')}`
+                      : p.discountEnd ? `~${p.discountEnd.replace(/-/g, '.')}까지` : `${p.discountStart.replace(/-/g, '.')}~`}
+                  </div>
+                )}
               </a>
             ))}
           </div>
