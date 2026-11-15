@@ -3,6 +3,8 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/ProductGrid'
+import ProductCard from '@/components/ProductCard'
+import { isDiscountActive } from '@/lib/discount'
 
 interface Product {
   id: string; name: string; brand: string; price: number; category: string
@@ -46,8 +48,45 @@ function ProductsContent() {
 
   const sorted = [...products].sort((a, b) => sort === 'low' ? a.price - b.price : b.price - a.price)
 
+  const discountProducts = allProducts.filter(p => isDiscountActive(p.discountPrice, p.discountStart, p.discountEnd))
+
   return (
     <>
+      {discountProducts.length > 0 && activeCategory === '전체' && !activeBrand && !search && (
+        <div style={{ margin: 'clamp(24px,3.6vw,52px) 0 0', padding: 'clamp(24px,3vw,40px)', background: '#141413', marginLeft: 'calc(-1 * clamp(16px,2.4vw,36px))', marginRight: 'calc(-1 * clamp(16px,2.4vw,36px))' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 'clamp(16px,2vw,28px)' }}>
+            <h2 style={{ fontSize: 'clamp(18px,1.8vw,24px)', fontWeight: 700, color: '#fbfbfa', margin: 0 }}>SALE</h2>
+            <span style={{ fontSize: 13, color: '#a3a29e' }}>{discountProducts.length}개 상품 할인 중</span>
+          </div>
+          <div style={{
+            display: 'grid', gridAutoFlow: 'column',
+            gridAutoColumns: 'minmax(200px, 240px)', gap: 'clamp(8px,1vw,16px)',
+            overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 8
+          }}>
+            {discountProducts.map(p => (
+              <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa' }}>
+                <div style={{
+                  aspectRatio: '4/5',
+                  background: p.images[0]
+                    ? `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`
+                    : '#3d3c39',
+                  marginBottom: 10
+                }} />
+                <div style={{ fontSize: 13, color: '#a3a29e' }}>{p.brand}</div>
+                <div style={{ fontSize: 14 }}>{p.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  <span style={{ fontSize: 14, color: '#ff4444', fontWeight: 700 }}>
+                    {Math.round((1 - p.discountPrice! / p.price) * 100)}%
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>₩{p.discountPrice!.toLocaleString()}</span>
+                  <span style={{ fontSize: 12, color: '#6b6a66', textDecoration: 'line-through' }}>₩{p.price.toLocaleString()}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       <h1 style={{ fontSize: 'clamp(22px,2.2vw,28px)', fontWeight: 500, letterSpacing: '-0.02em', margin: 'clamp(24px,3.6vw,52px) 0 clamp(20px,3vw,40px)' }}>
         {activeCategory === '전체' ? '전체 상품' : activeCategory}
       </h1>
