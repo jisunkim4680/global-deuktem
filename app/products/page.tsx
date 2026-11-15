@@ -22,6 +22,7 @@ function ProductsContent() {
   const [activeCategory, setActiveCategory] = useState(categoryParam || '전체')
   const [activeBrand, setActiveBrand] = useState('')
   const [sort, setSort] = useState<'low' | 'high'>('low')
+  const [showCount, setShowCount] = useState(30)
 
   // 전체 상품을 한번 불러와서 카테고리별 존재 여부 확인
   useEffect(() => {
@@ -56,7 +57,7 @@ function ProductsContent() {
           {visibleCategories.map(cat => (
             <button
               key={cat}
-              onClick={() => { setActiveCategory(cat); setActiveBrand('') }}
+              onClick={() => { setActiveCategory(cat); setActiveBrand(''); setShowCount(30) }}
               style={{
                 background: 'none', border: 'none', padding: '6px 0',
                 fontSize: 'clamp(15px,1.3vw,19px)', whiteSpace: 'nowrap', cursor: 'pointer',
@@ -82,7 +83,7 @@ function ProductsContent() {
             {categoryBrands.map(brand => (
               <button
                 key={brand}
-                onClick={() => setActiveBrand(activeBrand === brand ? '' : brand)}
+                onClick={() => { setActiveBrand(activeBrand === brand ? '' : brand); setShowCount(30) }}
                 style={{
                   background: 'none', border: 'none', padding: '4px 0', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
                   color: activeBrand === brand ? '#141413' : '#a3a29e', fontWeight: activeBrand === brand ? 600 : 400
@@ -117,7 +118,20 @@ function ProductsContent() {
         </div>
       </div>
 
-      <ProductGrid products={sorted} />
+      <ProductGrid products={sorted.slice(0, showCount)} />
+      {sorted.length > showCount && (
+        <div style={{ textAlign: 'center', padding: '32px 0 80px' }}>
+          <button
+            onClick={() => setShowCount(prev => prev + 30)}
+            style={{
+              padding: '14px 48px', fontSize: 15, background: '#fff',
+              color: '#141413', border: '1px solid #141413', cursor: 'pointer'
+            }}
+          >
+            더보기 ({sorted.length - showCount}개 남음)
+          </button>
+        </div>
+      )}
     </>
   )
 }
