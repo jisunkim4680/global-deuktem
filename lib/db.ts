@@ -1,4 +1,4 @@
-import { put, list, del } from '@vercel/blob'
+import { put, list, del, head } from '@vercel/blob'
 
 export interface Product {
   id: string
@@ -25,11 +25,22 @@ export interface Product {
 const PRODUCTS_KEY = 'data/products.json'
 const CONFIG_KEY = 'data/config.json'
 
+// URL 캐시 - list 호출 없이 바로 fetch
+const urlCache = new Map<string, string>()
+
 async function readBlob(key: string): Promise<string | null> {
   try {
+    // 캐시된 URL이 있으면 바로 fetch
+    const cached = urlCache.get(key)
+    if (cached) {
+      const res = await fetch(cached, { cache: 'no-store' })
+      if (res.ok) return await res.text()
+    }
+    // 없으면 list로 찾기
     const { blobs } = await list({ prefix: key })
     if (blobs.length === 0) return null
-    const res = await fetch(blobs[0].url)
+    urlCache.set(key, blobs[0].url)
+    const res = await fetch(blobs[0].url, { cache: 'no-store' })
     return await res.text()
   } catch {
     return null
@@ -37,14 +48,8 @@ async function readBlob(key: string): Promise<string | null> {
 }
 
 async function writeBlob(key: string, data: string): Promise<void> {
-  // 기존 blob 삭제 후 새로 업로드
-  try {
-    const { blobs } = await list({ prefix: key })
-    for (const blob of blobs) {
-      await del(blob.url)
-    }
-  } catch {}
-  await put(key, data, { access: 'public', addRandomSuffix: false })
+  const blob = await put(key, data, { access: 'public', addRandomSuffix: false })
+  urlCache.set(key, blob.url)
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -54,7 +59,7 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function saveProducts(products: Product[]): Promise<void> {
-  await writeBlob(PRODUCTS_KEY, JSON.stringify(products, null, 2))
+  await writeBlob(PRODUCTS_KEY, JSON.stringify(products))
 }
 
 export async function getProduct(id: string): Promise<Product | undefined> {
@@ -93,5 +98,5 @@ export async function getConfig(): Promise<{ userPassword: string; adminPassword
 }
 
 export async function saveConfig(config: { userPassword: string; adminPassword: string }): Promise<void> {
-  await writeBlob(CONFIG_KEY, JSON.stringify(config, null, 2))
+  await writeBlob(CONFIG_KEY, JSON.stringify(config))
 }

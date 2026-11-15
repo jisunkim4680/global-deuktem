@@ -213,8 +213,9 @@ export default function AdminPage() {
                 {p.status}
               </button>
               <button onClick={async () => {
-                await fetch(`/api/products/${p.id}/copy`, { method: 'POST', credentials: 'include' })
-                window.location.reload()
+                const res = await fetch(`/api/products/${p.id}/copy`, { method: 'POST', credentials: 'include' })
+                const copied = await res.json()
+                if (copied.id) window.location.href = `/admin/products/${copied.id}/edit`
               }} style={{
                 padding: '6px 12px', fontSize: 12, cursor: 'pointer', border: '1px solid #ecebe8',
                 background: 'none', color: '#141413'
