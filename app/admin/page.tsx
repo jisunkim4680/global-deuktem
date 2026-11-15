@@ -56,7 +56,7 @@ export default function AdminPage() {
 
   function downloadCSVTemplate() {
     const header = 'brand,name,price,category,status,colors,images,description'
-    const example = '보테가베네타,스몰 아르코 토트백,4850000,가방,구매가능,블랙|브라운,https://example.com/img1.jpg|https://example.com/img2.jpg,상품 설명 텍스트'
+    const example = '"보테가베네타","스몰 아르코 토트백",4850000,"가방","구매가능","블랙,브라운","https://example.com/img1.jpg,https://example.com/img2.jpg","상품 설명 텍스트"'
     const csv = `${header}\n${example}`
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)

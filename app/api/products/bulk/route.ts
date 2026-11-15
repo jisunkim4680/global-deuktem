@@ -51,13 +51,13 @@ export async function POST(req: NextRequest) {
       continue
     }
 
-    // 이미지 URL은 | 구분
+    // 이미지 URL은 , 또는 | 구분
     const images = row.images
-      ? row.images.split('|').map(u => u.trim()).filter(u => u.startsWith('http'))
+      ? row.images.split(/[,|]/).map(u => u.trim()).filter(u => u.startsWith('http'))
       : []
 
     const colors = row.colors
-      ? row.colors.split('|').map(c => {
+      ? row.colors.split(/[,|]/).map(c => {
           const trimmed = c.trim()
           if (trimmed.startsWith('#')) return trimmed
           const preset = COLOR_PRESETS.find(p => p.name === trimmed)
