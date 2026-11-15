@@ -265,12 +265,20 @@ export default function AdminProductForm({ initialData }: Props) {
           <input type="file" accept="image/*,.avif" multiple onChange={e => setNewFiles(e.target.files)} />
         </div>
         {error && <p style={{ color: '#b3261e', fontSize: 13 }}>{error}</p>}
-        <button type="submit" disabled={submitting} style={{
-          padding: '16px', fontSize: 15, fontWeight: 600, background: '#141413',
-          color: '#fbfbfa', border: 'none', cursor: 'pointer', opacity: submitting ? 0.6 : 1
-        }}>
-          {submitting ? '저장 중...' : (isEdit ? '수정하기' : '등록하기')}
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button type="button" onClick={() => router.back()} style={{
+            flex: 1, padding: '16px', fontSize: 15, fontWeight: 600, background: '#fff',
+            color: '#141413', border: '1px solid #ecebe8', cursor: 'pointer'
+          }}>
+            취소하기
+          </button>
+          <button type="submit" disabled={submitting} style={{
+            flex: 1, padding: '16px', fontSize: 15, fontWeight: 600, background: '#141413',
+            color: '#fbfbfa', border: 'none', cursor: 'pointer', opacity: submitting ? 0.6 : 1
+          }}>
+            {submitting ? '저장 중...' : (isEdit ? '수정하기' : '등록하기')}
+          </button>
+        </div>
       </form>
     </div>
   )
