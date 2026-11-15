@@ -69,6 +69,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     discountPrice: (formData.get('discountPrice') as string) ? parseInt(formData.get('discountPrice') as string, 10) : null,
     discountStart: (formData.get('discountStart') as string) ?? existing.discountStart ?? '',
     discountEnd: (formData.get('discountEnd') as string) ?? existing.discountEnd ?? '',
+    reservationStart: (formData.get('reservationStart') as string) ?? existing.reservationStart ?? '',
+    reservationEnd: (formData.get('reservationEnd') as string) ?? existing.reservationEnd ?? '',
     description: description !== null ? description.slice(0, 3000) : existing.description,
     descriptionAlign: (formData.get('descriptionAlign') as string) || existing.descriptionAlign,
     colors: colorsStr ? colorsStr.split(',').map(c => c.trim()).filter(Boolean) : existing.colors,

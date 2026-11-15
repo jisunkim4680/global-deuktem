@@ -12,6 +12,8 @@ interface ProductCardProps {
     images: string[]
     colors: string[]
     status: string
+    reservationStart: string
+    reservationEnd: string
   }
 }
 
@@ -33,8 +35,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 11, color: '#8a8984' }}>이미지 없음</span>
           )}
           {product.status !== '구매가능' && (
-            <span style={{ position: 'absolute', left: 12, top: 12, fontSize: 13, color: '#6b6a66' }}>
-              {product.status}
+            <span style={{ position: 'absolute', left: 12, top: 12, fontSize: 12, color: '#fff', background: product.status === '예약중' ? '#2b5797' : '#6b6a66', padding: '2px 8px' }}>
+              {product.status}{product.status === '예약중' && product.reservationEnd ? ` ~${product.reservationEnd.replace(/-/g, '.')}` : ''}
             </span>
           )}
           {hasDiscount && (

@@ -10,6 +10,7 @@ import SaleSection from '@/components/SaleSection'
 interface Product {
   id: string; name: string; brand: string; price: number; category: string
   discountPrice: number | null; discountStart: string; discountEnd: string
+  reservationStart: string; reservationEnd: string
   images: string[]; colors: string[]; status: string
 }
 

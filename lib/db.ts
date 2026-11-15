@@ -13,6 +13,8 @@ export interface Product {
   discountPrice: number | null
   discountStart: string
   discountEnd: string
+  reservationStart: string
+  reservationEnd: string
   description: string
   descriptionAlign: string
   colors: string[]
@@ -36,6 +38,8 @@ function toProduct(row: any): Product {
     discountPrice: row.discount_price,
     discountStart: row.discount_start || '',
     discountEnd: row.discount_end || '',
+    reservationStart: row.reservation_start || '',
+    reservationEnd: row.reservation_end || '',
     description: row.description || '',
     descriptionAlign: row.description_align || 'center',
     colors: row.colors || [],
@@ -66,8 +70,8 @@ export async function getProduct(id: string): Promise<Product | undefined> {
 
 export async function addProduct(product: Product): Promise<Product> {
   const rows = await sql`
-    INSERT INTO products (id, category, brand, name, size, related_products, price, discount_price, discount_start, discount_end, description, description_align, colors, options, images, visible, status, sort_order)
-    VALUES (${product.id}, ${product.category}, ${product.brand}, ${product.name}, ${product.size}, ${JSON.stringify(product.relatedProducts)}, ${product.price}, ${product.discountPrice}, ${product.discountStart}, ${product.discountEnd}, ${product.description}, ${product.descriptionAlign}, ${JSON.stringify(product.colors)}, ${JSON.stringify(product.options)}, ${JSON.stringify(product.images)}, ${product.visible}, ${product.status}, 0)
+    INSERT INTO products (id, category, brand, name, size, related_products, price, discount_price, discount_start, discount_end, reservation_start, reservation_end, description, description_align, colors, options, images, visible, status, sort_order)
+    VALUES (${product.id}, ${product.category}, ${product.brand}, ${product.name}, ${product.size}, ${JSON.stringify(product.relatedProducts)}, ${product.price}, ${product.discountPrice}, ${product.discountStart}, ${product.discountEnd}, ${product.reservationStart}, ${product.reservationEnd}, ${product.description}, ${product.descriptionAlign}, ${JSON.stringify(product.colors)}, ${JSON.stringify(product.options)}, ${JSON.stringify(product.images)}, ${product.visible}, ${product.status}, 0)
     RETURNING *
   `
   return toProduct(rows[0])
@@ -89,6 +93,8 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
       discount_price = ${merged.discountPrice},
       discount_start = ${merged.discountStart},
       discount_end = ${merged.discountEnd},
+      reservation_start = ${merged.reservationStart},
+      reservation_end = ${merged.reservationEnd},
       description = ${merged.description},
       description_align = ${merged.descriptionAlign},
       colors = ${JSON.stringify(merged.colors)},

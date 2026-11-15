@@ -3,6 +3,7 @@ import ProductCard from './ProductCard'
 interface Product {
   id: string; name: string; brand: string; price: number
   discountPrice: number | null; discountStart: string; discountEnd: string
+  reservationStart: string; reservationEnd: string
   images: string[]; colors: string[]; status: string
 }
 

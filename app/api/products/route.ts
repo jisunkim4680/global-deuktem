@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
     discountPrice: (formData.get('discountPrice') as string) ? parseInt(formData.get('discountPrice') as string, 10) : null,
     discountStart: (formData.get('discountStart') as string) || '',
     discountEnd: (formData.get('discountEnd') as string) || '',
+    reservationStart: (formData.get('reservationStart') as string) || '',
+    reservationEnd: (formData.get('reservationEnd') as string) || '',
     description: ((formData.get('description') as string) || '').slice(0, 3000),
     descriptionAlign: (formData.get('descriptionAlign') as string) || 'center',
     colors: colorsStr ? colorsStr.split(',').map(c => c.trim()).filter(Boolean) : [],

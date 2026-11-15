@@ -8,7 +8,7 @@ interface ProductData {
   id?: string; brand?: string; name?: string; size?: string
   relatedProducts?: string[]
   price?: number; discountPrice?: number | null; discountStart?: string; discountEnd?: string
-  category?: string
+  reservationStart?: string; reservationEnd?: string; category?: string
   description?: string; descriptionAlign?: string; colors?: string[]
   options?: any[]; images?: string[]; visible?: boolean; status?: string
 }
@@ -33,6 +33,8 @@ export default function AdminProductForm({ initialData }: Props) {
   const [discountPrice, setDiscountPrice] = useState(initialData?.discountPrice?.toString() || '')
   const [discountStart, setDiscountStart] = useState(initialData?.discountStart || '')
   const [discountEnd, setDiscountEnd] = useState(initialData?.discountEnd || '')
+  const [reservationStart, setReservationStart] = useState(initialData?.reservationStart || '')
+  const [reservationEnd, setReservationEnd] = useState(initialData?.reservationEnd || '')
   const [category, setCategory] = useState(initialData?.category || '가방')
   const [description, setDescription] = useState(initialData?.description || '')
   const [descriptionAlign, setDescriptionAlign] = useState(initialData?.descriptionAlign || 'center')
@@ -79,6 +81,8 @@ export default function AdminProductForm({ initialData }: Props) {
     fd.append('discountPrice', discountPrice)
     fd.append('discountStart', discountStart)
     fd.append('discountEnd', discountEnd)
+    fd.append('reservationStart', reservationStart)
+    fd.append('reservationEnd', reservationEnd)
     fd.append('category', category)
     fd.append('description', description)
     fd.append('descriptionAlign', descriptionAlign)
@@ -139,6 +143,15 @@ export default function AdminProductForm({ initialData }: Props) {
             <option>구매가능</option><option>품절</option><option>예약중</option>
           </select>
         </div>
+        {status === '예약중' && (
+          <div style={{ border: '1px solid #ecebe8', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <label style={{ ...labelStyle, marginBottom: 0 }}>예약 기간</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>예약 시작일</label><input style={inputStyle} type="date" value={reservationStart} onChange={e => setReservationStart(e.target.value)} /></div>
+              <div><label style={{ fontSize: 12, color: '#6b6a66', marginBottom: 4, display: 'block' }}>예약 종료일</label><input style={inputStyle} type="date" value={reservationEnd} onChange={e => setReservationEnd(e.target.value)} /></div>
+            </div>
+          </div>
+        )}
         <div>
           <label style={labelStyle}>전시 여부</label>
           <label style={{ fontSize: 14 }}>

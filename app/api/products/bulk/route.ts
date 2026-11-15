@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
       discountPrice: row.discountprice ? parseInt(row.discountprice, 10) : null,
       discountStart: row.discountstart || '',
       discountEnd: row.discountend || '',
+      reservationStart: row.reservationstart || '',
+      reservationEnd: row.reservationend || '',
       description: row.description || '',
       descriptionAlign: row.descriptionalign || 'center',
       colors,

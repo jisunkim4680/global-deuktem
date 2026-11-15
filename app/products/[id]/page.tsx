@@ -11,7 +11,7 @@ interface Product {
   id: string; name: string; brand: string; size: string
   relatedProducts: string[]
   price: number; discountPrice: number | null; discountStart: string; discountEnd: string
-  category: string
+  reservationStart: string; reservationEnd: string; category: string
   description: string; descriptionAlign: string
   images: string[]; colors: string[]; options: any[]; status: string
 }
@@ -119,7 +119,16 @@ function ProductContent() {
             <span style={{ fontSize: 12, color: '#6b6a66' }}>~{product.discountEnd}까지</span>
           )}
           {product.status !== '구매가능' && (
-            <span style={{ fontSize: 14, color: '#b3261e', fontWeight: 600 }}>{product.status}</span>
+            <div>
+              <span style={{ fontSize: 14, color: product.status === '예약중' ? '#2b5797' : '#b3261e', fontWeight: 600 }}>{product.status}</span>
+              {product.status === '예약중' && (product.reservationStart || product.reservationEnd) && (
+                <span style={{ fontSize: 13, color: '#6b6a66', marginLeft: 8 }}>
+                  {product.reservationStart && product.reservationEnd
+                    ? `${product.reservationStart.replace(/-/g, '.')} ~ ${product.reservationEnd.replace(/-/g, '.')}`
+                    : product.reservationEnd ? `~${product.reservationEnd.replace(/-/g, '.')}` : `${product.reservationStart.replace(/-/g, '.')}~`}
+                </span>
+              )}
+            </div>
           )}
           {product.colors.length > 0 && (
             <div>
