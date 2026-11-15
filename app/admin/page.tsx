@@ -15,6 +15,8 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
   const [filterBrand, setFilterBrand] = useState('')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 30
 
   useEffect(() => {
     fetch('/api/products', { credentials: 'include' })
@@ -37,6 +39,9 @@ export default function AdminPage() {
     }
     return true
   })
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   async function handleCSVUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -148,15 +153,15 @@ export default function AdminPage() {
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
         <input
-          type="text" placeholder="상품명 또는 브랜드 검색..." value={search} onChange={e => setSearch(e.target.value)}
+          type="text" placeholder="상품명 또는 브랜드 검색..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
           style={{ padding: '10px 14px', border: '1px solid #ecebe8', fontSize: 14, outline: 'none', flex: 1, minWidth: 180 }}
         />
-        <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)}
+        <select value={filterCategory} onChange={e => { setFilterCategory(e.target.value); setPage(1) }}
           style={{ padding: '10px 14px', border: '1px solid #ecebe8', fontSize: 14, outline: 'none', background: '#fff' }}>
           <option value="">전체 카테고리</option>
           {categories.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={filterBrand} onChange={e => setFilterBrand(e.target.value)}
+        <select value={filterBrand} onChange={e => { setFilterBrand(e.target.value); setPage(1) }}
           style={{ padding: '10px 14px', border: '1px solid #ecebe8', fontSize: 14, outline: 'none', background: '#fff' }}>
           <option value="">전체 브랜드</option>
           {brands.map(b => <option key={b} value={b}>{b}</option>)}
@@ -164,11 +169,11 @@ export default function AdminPage() {
         <span style={{ fontSize: 14, color: '#6b6a66', alignSelf: 'center' }}>{filtered.length}개</span>
       </div>
 
-      {filtered.length === 0 && (
+      {paged.length === 0 && (
         <p style={{ textAlign: 'center', color: '#8a8984', padding: 60 }}>등록된 상품이 없습니다</p>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, border: filtered.length ? '1px solid #ecebe8' : 'none' }}>
-        {filtered.map((p, idx) => {
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, border: paged.length ? '1px solid #ecebe8' : 'none' }}>
+        {paged.map((p, idx) => {
           const canDrag = !search && !filterCategory && !filterBrand
           const productIdx = canDrag ? products.findIndex(pp => pp.id === p.id) : -1
           return (
@@ -270,6 +275,20 @@ export default function AdminPage() {
           )
         })}
       </div>
+
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '24px 0' }}>
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+            style={{ padding: '8px 16px', fontSize: 13, border: '1px solid #ecebe8', background: '#fff', cursor: page === 1 ? 'default' : 'pointer', opacity: page === 1 ? 0.4 : 1 }}>
+            ← 이전
+          </button>
+          <span style={{ fontSize: 14, color: '#3d3c39', padding: '0 12px' }}>{page} / {totalPages}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+            style={{ padding: '8px 16px', fontSize: 13, border: '1px solid #ecebe8', background: '#fff', cursor: page === totalPages ? 'default' : 'pointer', opacity: page === totalPages ? 0.4 : 1 }}>
+            다음 →
+          </button>
+        </div>
+      )}
     </div>
   )
 }
