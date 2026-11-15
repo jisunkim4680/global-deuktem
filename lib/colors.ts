@@ -1,6 +1,7 @@
 export const COLOR_PRESETS: { name: string; hex: string }[] = [
   { name: '블랙', hex: '#1a1a1a' },
   { name: '다크브라운', hex: '#3b2314' },
+  { name: '카멜', hex: '#c4915e' },
   { name: '탄', hex: '#c19a6b' },
   { name: '브라운', hex: '#6b4226' },
   { name: '레드', hex: '#c62828' },
