@@ -45,9 +45,9 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
         SALE
       </div>
 
-      <div style={{ padding: 'clamp(32px,4vw,56px) clamp(24px,3vw,48px)', position: 'relative' }}>
+      <div style={{ padding: 'clamp(16px,2vw,28px) clamp(24px,3vw,48px)', position: 'relative' }}>
         {/* 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(24px,3vw,40px)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(12px,1.5vw,20px)' }}>
           <span style={{
             fontSize: 'clamp(11px,1vw,13px)', fontWeight: 600,
             color: '#d4a574', letterSpacing: '0.2em', textTransform: 'uppercase'
@@ -64,10 +64,10 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
         {cnt === 1 && (() => {
           const p = products[0]
           return (
-            <a href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 'clamp(24px,4vw,60px)', alignItems: 'center' }}>
+            <a href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'clamp(20px,3vw,40px)', alignItems: 'center' }}>
               <div style={{ position: 'relative' }}>
                 <div style={{
-                  aspectRatio: '3/4',
+                  aspectRatio: '5/4',
                   background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   boxShadow: '24px 24px 60px rgba(0,0,0,0.5)'
                 }} />
@@ -81,16 +81,16 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
               </div>
               <div style={{ padding: '20px 0' }}>
                 <div style={{ fontSize: 13, color: '#8a8984', letterSpacing: '0.08em', marginBottom: 12 }}>{p.brand}</div>
-                <div style={{ fontSize: 'clamp(24px,3vw,38px)', fontWeight: 300, lineHeight: 1.2, marginBottom: 24, letterSpacing: '-0.02em' }}>{p.name}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 8 }}>
-                  <span style={{ fontSize: 'clamp(24px,2.6vw,34px)', fontWeight: 600, color: '#d4a574' }}>₩{p.discountPrice!.toLocaleString()}</span>
+                <div style={{ fontSize: 'clamp(18px,2.2vw,28px)', fontWeight: 300, lineHeight: 1.2, marginBottom: 12, letterSpacing: '-0.02em' }}>{p.name}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 4 }}>
+                  <span style={{ fontSize: 'clamp(18px,2vw,26px)', fontWeight: 600, color: '#d4a574' }}>₩{p.discountPrice!.toLocaleString()}</span>
                 </div>
                 <span style={{ fontSize: 15, color: '#6b6a66', textDecoration: 'line-through' }}>₩{p.price.toLocaleString()}</span>
                 {period(p) && (
-                  <div style={{ fontSize: 12, color: '#6b6a66', marginTop: 16, letterSpacing: '0.04em' }}>{period(p)}</div>
+                  <div style={{ fontSize: 12, color: '#6b6a66', marginTop: 8, letterSpacing: '0.04em' }}>{period(p)}</div>
                 )}
                 <div style={{
-                  display: 'inline-block', marginTop: 28, padding: '14px 36px',
+                  display: 'inline-block', marginTop: 16, padding: '10px 28px',
                   border: '1px solid rgba(212,165,116,0.4)', color: '#d4a574',
                   fontSize: 13, fontWeight: 600, letterSpacing: '0.1em',
                   transition: 'all 0.3s'
@@ -107,12 +107,12 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
 
         {/* 2개: 에디토리얼 2단 */}
         {cnt === 2 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(20px,3vw,40px)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(16px,2vw,28px)' }}>
             {products.map((p, i) => (
-              <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', position: 'relative', marginTop: i === 1 ? 40 : 0 }}>
+              <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', position: 'relative', marginTop: i === 1 ? 20 : 0 }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
-                    aspectRatio: '3/4',
+                    aspectRatio: '5/4',
                     background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   }} />
                   <div style={{
@@ -123,7 +123,7 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
                     <span style={{ fontSize: 20, color: '#d4a574', fontWeight: 700 }}>{pct(p)}%</span>
                   </div>
                 </div>
-                <div style={{ padding: '14px 0' }}>
+                <div style={{ padding: '10px 0' }}>
                   <div style={{ fontSize: 12, color: '#8a8984', letterSpacing: '0.06em', marginBottom: 6 }}>{p.brand}</div>
                   <div style={{ fontSize: 16, fontWeight: 400, marginBottom: 10 }}>{p.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -147,11 +147,11 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
             {products.map(p => (
               <a key={p.id} href={`/products/${p.id}`} style={{
                 textDecoration: 'none', color: '#fbfbfa', flexShrink: 0,
-                width: 'clamp(180px, 22vw, 260px)'
+                width: 'clamp(160px, 18vw, 220px)'
               }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
-                    aspectRatio: '4/5',
+                    aspectRatio: '5/4',
                     background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   }} />
                   <div style={{
