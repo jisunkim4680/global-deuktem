@@ -20,6 +20,7 @@ function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([])
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState(categoryParam || '전체')
+  const [activeBrand, setActiveBrand] = useState('')
   const [sort, setSort] = useState<'low' | 'high'>('low')
 
   // 전체 상품을 한번 불러와서 카테고리별 존재 여부 확인
@@ -29,12 +30,18 @@ function ProductsContent() {
 
   const visibleCategories = ['전체', ...ALL_CATEGORIES.filter(cat => allProducts.some(p => p.category === cat))]
 
+  // 선택된 카테고리의 브랜드 목록
+  const categoryBrands = activeCategory !== '전체'
+    ? [...new Set(allProducts.filter(p => p.category === activeCategory).map(p => p.brand))].sort()
+    : []
+
   useEffect(() => {
     const params = new URLSearchParams()
     if (search) params.set('search', search)
     if (activeCategory !== '전체') params.set('category', activeCategory)
+    if (activeBrand) params.set('brand', activeBrand)
     fetch(`/api/products?${params}`).then(r => r.json()).then(setProducts)
-  }, [search, activeCategory])
+  }, [search, activeCategory, activeBrand])
 
   const sorted = [...products].sort((a, b) => sort === 'low' ? a.price - b.price : b.price - a.price)
 
@@ -49,7 +56,7 @@ function ProductsContent() {
           {visibleCategories.map(cat => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => { setActiveCategory(cat); setActiveBrand('') }}
               style={{
                 background: 'none', border: 'none', padding: '6px 0',
                 fontSize: 'clamp(15px,1.3vw,19px)', whiteSpace: 'nowrap', cursor: 'pointer',
@@ -61,6 +68,31 @@ function ProductsContent() {
             </button>
           ))}
         </div>
+        {categoryBrands.length > 1 && (
+          <div style={{ display: 'flex', gap: 'clamp(12px,2vw,24px)', overflowX: 'auto', scrollbarWidth: 'none', width: '100%' }}>
+            <button
+              onClick={() => setActiveBrand('')}
+              style={{
+                background: 'none', border: 'none', padding: '4px 0', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+                color: !activeBrand ? '#141413' : '#a3a29e', fontWeight: !activeBrand ? 600 : 400
+              }}
+            >
+              전체
+            </button>
+            {categoryBrands.map(brand => (
+              <button
+                key={brand}
+                onClick={() => setActiveBrand(activeBrand === brand ? '' : brand)}
+                style={{
+                  background: 'none', border: 'none', padding: '4px 0', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+                  color: activeBrand === brand ? '#141413' : '#a3a29e', fontWeight: activeBrand === brand ? 600 : 400
+                }}
+              >
+                {brand}
+              </button>
+            ))}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(16px,2.4vw,36px)', marginLeft: 'auto' }}>
           <input
             type="text" placeholder="검색..." value={search} onChange={e => setSearch(e.target.value)}
