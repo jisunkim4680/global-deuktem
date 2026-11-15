@@ -45,9 +45,9 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
         SALE
       </div>
 
-      <div style={{ padding: 'clamp(12px,1.3vw,20px) clamp(24px,3vw,48px)', position: 'relative' }}>
+      <div style={{ padding: 'clamp(14px,1.5vw,22px) clamp(24px,3vw,48px)', position: 'relative' }}>
         {/* 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(8px,1vw,14px)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'clamp(10px,1.1vw,16px)' }}>
           <span style={{
             fontSize: 'clamp(11px,1vw,13px)', fontWeight: 600,
             color: '#d4a574', letterSpacing: '0.2em', textTransform: 'uppercase'
