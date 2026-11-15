@@ -1,4 +1,4 @@
-import { put, list, del, head } from '@vercel/blob'
+import { put, list, del } from '@vercel/blob'
 
 export interface Product {
   id: string
@@ -25,21 +25,10 @@ export interface Product {
 const PRODUCTS_KEY = 'data/products.json'
 const CONFIG_KEY = 'data/config.json'
 
-// URL 캐시 - list 호출 없이 바로 fetch
-const urlCache = new Map<string, string>()
-
 async function readBlob(key: string): Promise<string | null> {
   try {
-    // 캐시된 URL이 있으면 바로 fetch
-    const cached = urlCache.get(key)
-    if (cached) {
-      const res = await fetch(cached, { cache: 'no-store' })
-      if (res.ok) return await res.text()
-    }
-    // 없으면 list로 찾기
     const { blobs } = await list({ prefix: key })
     if (blobs.length === 0) return null
-    urlCache.set(key, blobs[0].url)
     const res = await fetch(blobs[0].url, { cache: 'no-store' })
     return await res.text()
   } catch {
@@ -48,8 +37,14 @@ async function readBlob(key: string): Promise<string | null> {
 }
 
 async function writeBlob(key: string, data: string): Promise<void> {
-  const blob = await put(key, data, { access: 'public', addRandomSuffix: false })
-  urlCache.set(key, blob.url)
+  // 기존 blob 삭제
+  try {
+    const { blobs } = await list({ prefix: key })
+    for (const blob of blobs) {
+      await del(blob.url)
+    }
+  } catch {}
+  await put(key, data, { access: 'public', addRandomSuffix: false })
 }
 
 export async function getProducts(): Promise<Product[]> {
