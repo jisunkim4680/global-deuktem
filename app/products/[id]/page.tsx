@@ -25,12 +25,14 @@ function ProductContent() {
   const [addedMsg, setAddedMsg] = useState('')
 
   useEffect(() => {
-    fetch(`/api/products/${id}`).then(r => r.json()).then((p: Product) => {
+    fetch(`/api/products/${id}`, { credentials: 'include' }).then(r => r.json()).then((p: Product) => {
       setProduct(p)
       setActiveImage(0)
       if (p.relatedProducts && p.relatedProducts.length > 0) {
         Promise.all(
-          p.relatedProducts.map(rid => fetch(`/api/products/${rid}`).then(r => r.ok ? r.json() : null))
+          p.relatedProducts.map(rid =>
+            fetch(`/api/products/${rid}`, { credentials: 'include' }).then(r => r.ok ? r.json() : null)
+          )
         ).then(results => setRelatedSizes(results.filter(Boolean)))
       } else {
         setRelatedSizes([])
