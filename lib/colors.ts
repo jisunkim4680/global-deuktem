@@ -15,6 +15,7 @@ export const COLOR_PRESETS: { name: string; hex: string }[] = [
   { name: '크림', hex: '#ece2d0' },
   { name: '아이보리', hex: '#f5f0e1' },
   { name: '그레이', hex: '#808080' },
+  { name: '라벤더', hex: '#b4a7d6' },
   { name: '퍼플', hex: '#6a3d7d' },
   { name: '네이비', hex: '#1b2a4a' },
   { name: '블루', hex: '#2b5797' },
