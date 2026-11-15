@@ -52,46 +52,104 @@ function ProductsContent() {
 
   return (
     <>
-      {discountProducts.length > 0 && activeCategory === '전체' && !activeBrand && !search && (
+      {discountProducts.length > 0 && activeCategory === '전체' && !activeBrand && !search && (() => {
+        const cnt = discountProducts.length
+        const saleItem = (p: typeof discountProducts[0], size: 'lg' | 'md' | 'sm') => {
+          const imgRatio = size === 'lg' ? '3/4' : '4/5'
+          const nameSize = size === 'lg' ? 18 : size === 'md' ? 15 : 14
+          const priceSize = size === 'lg' ? 16 : 14
+          return (
+            <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa' }}>
+              <div style={{
+                aspectRatio: imgRatio,
+                background: p.images[0]
+                  ? `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`
+                  : '#3d3c39',
+                marginBottom: 10
+              }} />
+              <div style={{ fontSize: 13, color: '#a3a29e' }}>{p.brand}</div>
+              <div style={{ fontSize: nameSize, fontWeight: size === 'lg' ? 600 : 400 }}>{p.name}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <span style={{ fontSize: priceSize, color: '#ff4444', fontWeight: 700 }}>
+                  {Math.round((1 - p.discountPrice! / p.price) * 100)}%
+                </span>
+                <span style={{ fontSize: priceSize, fontWeight: 600 }}>₩{p.discountPrice!.toLocaleString()}</span>
+                <span style={{ fontSize: 12, color: '#6b6a66', textDecoration: 'line-through' }}>₩{p.price.toLocaleString()}</span>
+              </div>
+              {(p.discountStart || p.discountEnd) && (
+                <div style={{ fontSize: 11, color: '#6b6a66', marginTop: 4 }}>
+                  {p.discountStart && p.discountEnd
+                    ? `${p.discountStart.replace(/-/g, '.')} ~ ${p.discountEnd.replace(/-/g, '.')}`
+                    : p.discountEnd ? `~${p.discountEnd.replace(/-/g, '.')}까지` : `${p.discountStart.replace(/-/g, '.')}~`}
+                </div>
+              )}
+            </a>
+          )
+        }
+
+        return (
         <div style={{ margin: 'clamp(24px,3.6vw,52px) 0 0', padding: 'clamp(24px,3vw,40px)', background: '#141413', marginLeft: 'calc(-1 * clamp(16px,2.4vw,36px))', marginRight: 'calc(-1 * clamp(16px,2.4vw,36px))' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 'clamp(16px,2vw,28px)' }}>
             <h2 style={{ fontSize: 'clamp(18px,1.8vw,24px)', fontWeight: 700, color: '#fbfbfa', margin: 0 }}>SALE</h2>
-            <span style={{ fontSize: 13, color: '#a3a29e' }}>{discountProducts.length}개 상품 할인 중</span>
+            <span style={{ fontSize: 13, color: '#a3a29e' }}>{cnt}개 상품 할인 중</span>
           </div>
-          <div style={{
-            display: 'grid', gridAutoFlow: 'column',
-            gridAutoColumns: 'minmax(200px, 240px)', gap: 'clamp(8px,1vw,16px)',
-            overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 8
-          }}>
-            {discountProducts.map(p => (
-              <a key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa' }}>
-                <div style={{
-                  aspectRatio: '4/5',
-                  background: p.images[0]
-                    ? `url(${p.images[0].startsWith('http') ? p.images[0] : `/uploads/${p.images[0]}`}) center/cover`
-                    : '#3d3c39',
-                  marginBottom: 10
-                }} />
-                <div style={{ fontSize: 13, color: '#a3a29e' }}>{p.brand}</div>
-                <div style={{ fontSize: 14 }}>{p.name}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                  <span style={{ fontSize: 14, color: '#ff4444', fontWeight: 700 }}>
-                    {Math.round((1 - p.discountPrice! / p.price) * 100)}%
+
+          {/* 1개: 가로 풀사이즈 히어로 */}
+          {cnt === 1 && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(16px,3vw,40px)', alignItems: 'center' }}>
+              <div style={{
+                aspectRatio: '4/5',
+                background: discountProducts[0].images[0]
+                  ? `url(${discountProducts[0].images[0].startsWith('http') ? discountProducts[0].images[0] : `/uploads/${discountProducts[0].images[0]}`}) center/cover`
+                  : '#3d3c39',
+              }} />
+              <div>
+                <div style={{ fontSize: 14, color: '#a3a29e', marginBottom: 8 }}>{discountProducts[0].brand}</div>
+                <div style={{ fontSize: 'clamp(20px,2.4vw,32px)', fontWeight: 600, color: '#fbfbfa', marginBottom: 12 }}>{discountProducts[0].name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <span style={{ fontSize: 28, color: '#ff4444', fontWeight: 700 }}>
+                    {Math.round((1 - discountProducts[0].discountPrice! / discountProducts[0].price) * 100)}%
                   </span>
-                  <span style={{ fontSize: 14, fontWeight: 600 }}>₩{p.discountPrice!.toLocaleString()}</span>
-                  <span style={{ fontSize: 12, color: '#6b6a66', textDecoration: 'line-through' }}>₩{p.price.toLocaleString()}</span>
+                  <span style={{ fontSize: 22, fontWeight: 600, color: '#fbfbfa' }}>₩{discountProducts[0].discountPrice!.toLocaleString()}</span>
                 </div>
-                {(p.discountStart || p.discountEnd) && (
-                  <div style={{ fontSize: 11, color: '#6b6a66', marginTop: 4 }}>
-                    {p.discountStart && p.discountEnd
-                      ? `${p.discountStart.replace(/-/g, '.')} ~ ${p.discountEnd.replace(/-/g, '.')}`
-                      : p.discountEnd ? `~${p.discountEnd.replace(/-/g, '.')}까지` : `${p.discountStart.replace(/-/g, '.')}~`}
+                <span style={{ fontSize: 15, color: '#6b6a66', textDecoration: 'line-through' }}>₩{discountProducts[0].price.toLocaleString()}</span>
+                {(discountProducts[0].discountStart || discountProducts[0].discountEnd) && (
+                  <div style={{ fontSize: 13, color: '#6b6a66', marginTop: 12 }}>
+                    {discountProducts[0].discountStart && discountProducts[0].discountEnd
+                      ? `${discountProducts[0].discountStart.replace(/-/g, '.')} ~ ${discountProducts[0].discountEnd.replace(/-/g, '.')}`
+                      : discountProducts[0].discountEnd ? `~${discountProducts[0].discountEnd.replace(/-/g, '.')}까지` : ''}
                   </div>
                 )}
-              </a>
-            ))}
-          </div>
+                <a href={`/products/${discountProducts[0].id}`} style={{
+                  display: 'inline-block', marginTop: 20, padding: '14px 32px',
+                  background: '#fbfbfa', color: '#141413', textDecoration: 'none', fontSize: 14, fontWeight: 600
+                }}>
+                  상품 보기
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* 2개: 반반 그리드 */}
+          {cnt === 2 && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(16px,2vw,32px)' }}>
+              {discountProducts.map(p => saleItem(p, 'md'))}
+            </div>
+          )}
+
+          {/* 3개 이상: 가로 스크롤 */}
+          {cnt >= 3 && (
+            <div style={{
+              display: 'grid', gridAutoFlow: 'column',
+              gridAutoColumns: 'minmax(200px, 240px)', gap: 'clamp(8px,1vw,16px)',
+              overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 8
+            }}>
+              {discountProducts.map(p => saleItem(p, 'sm'))}
+            </div>
+          )}
         </div>
+        )
+      })()
       )}
 
       <h1 style={{ fontSize: 'clamp(22px,2.2vw,28px)', fontWeight: 500, letterSpacing: '-0.02em', margin: 'clamp(24px,3.6vw,52px) 0 clamp(20px,3vw,40px)' }}>
