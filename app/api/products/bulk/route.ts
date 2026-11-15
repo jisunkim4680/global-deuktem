@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { getProducts, saveProducts, Product } from '@/lib/db'
+import { COLOR_PRESETS } from '@/lib/colors'
 import { requireAuth } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
@@ -56,7 +57,12 @@ export async function POST(req: NextRequest) {
       : []
 
     const colors = row.colors
-      ? row.colors.split('|').map(c => c.trim()).filter(Boolean)
+      ? row.colors.split('|').map(c => {
+          const trimmed = c.trim()
+          if (trimmed.startsWith('#')) return trimmed
+          const preset = COLOR_PRESETS.find(p => p.name === trimmed)
+          return preset ? preset.hex : ''
+        }).filter(Boolean)
       : []
 
     newProducts.push({
