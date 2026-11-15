@@ -65,9 +65,9 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
           const p = products[0]
           return (
             <a href={`/products/${p.id}`} style={{ textDecoration: 'none', color: '#fbfbfa', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'clamp(20px,3vw,40px)', alignItems: 'center' }}>
-              <div style={{ position: 'relative', maxHeight: 280 }}>
+              <div style={{ position: 'relative', maxHeight: 400 }}>
                 <div style={{
-                  aspectRatio: '4/5', maxHeight: 280,
+                  aspectRatio: '4/5', maxHeight: 400,
                   background: p.images[0] ? `url(${imgUrl(p.images[0])}) center/cover` : '#2a2928',
                   boxShadow: '24px 24px 60px rgba(0,0,0,0.5)'
                 }} />
