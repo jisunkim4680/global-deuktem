@@ -31,7 +31,7 @@ export default function SaleSection({ products }: { products: SaleProduct[] }) {
 
   return (
     <section style={{
-      margin: '4px calc(-1 * clamp(16px,2.4vw,36px)) 0',
+      margin: 0,
       background: 'linear-gradient(165deg, #0f0f0e 0%, #1a1918 50%, #141413 100%)',
       position: 'relative', overflow: 'hidden'
     }}>

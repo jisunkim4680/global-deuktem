@@ -54,10 +54,10 @@ function ProductsContent() {
   return (
     <>
       <Header showSearch onSearch={v => { setSearch(v); setShowCount(30) }} />
-      <main style={{ padding: '0 clamp(16px,2.4vw,36px)' }}>
       {discountProducts.length > 0 && activeCategory === '전체' && !activeBrand && !search && (
         <SaleSection products={discountProducts} />
       )}
+      <main style={{ padding: '0 clamp(16px,2.4vw,36px)' }}>
 
       <h1 style={{ fontSize: 'clamp(22px,2.2vw,28px)', fontWeight: 500, letterSpacing: '-0.02em', margin: 'clamp(24px,3.6vw,52px) 0 clamp(20px,3vw,40px)' }}>
         {activeCategory === '전체' ? '전체 상품' : activeCategory}
