@@ -12,12 +12,28 @@ export default function OrderPage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [customsCode, setCustomsCode] = useState('')
+  const [zonecode, setZonecode] = useState('')
   const [address, setAddress] = useState('')
+  const [addressDetail, setAddressDetail] = useState('')
   const [memo, setMemo] = useState('')
   const [copied, setCopied] = useState(false)
   const [orderText, setOrderText] = useState('')
 
   useEffect(() => { setItems(getCart()) }, [])
+
+  function openPostcode() {
+    const script = document.createElement('script')
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+    script.onload = () => {
+      new (window as any).daum.Postcode({
+        oncomplete: (data: any) => {
+          setZonecode(data.zonecode)
+          setAddress(data.roadAddress || data.jibunAddress)
+        }
+      }).open()
+    }
+    document.body.appendChild(script)
+  }
 
   function getItemPrice(item: CartItem): number {
     return isDiscountActive(item.discountPrice, item.discountStart, item.discountEnd)
@@ -37,7 +53,7 @@ export default function OrderPage() {
       `이름: ${name}`,
       `연락처: ${phone}`,
       `통관부호: ${customsCode}`,
-      `주소: ${address}`,
+      `주소: (${zonecode}) ${address} ${addressDetail}`.trim(),
       ...(memo ? [`메모: ${memo}`] : []),
       '',
       '▶ 주문 상품',
@@ -59,7 +75,7 @@ export default function OrderPage() {
   }
 
   function handleGenerate() {
-    if (!nickname || !name || !phone || !customsCode || !address) {
+    if (!nickname || !name || !phone || !customsCode || !address || !addressDetail) {
       alert('닉네임, 이름, 연락처, 통관부호, 주소를 모두 입력해주세요')
       return
     }
@@ -130,7 +146,19 @@ export default function OrderPage() {
             <div><label style={labelStyle}>이름 *</label><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} placeholder="홍길동" /></div>
             <div><label style={labelStyle}>연락처 *</label><input style={inputStyle} value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-1234-5678" /></div>
             <div><label style={labelStyle}>통관부호 *</label><input style={inputStyle} value={customsCode} onChange={e => setCustomsCode(e.target.value)} placeholder="P123456789012" /></div>
-            <div><label style={labelStyle}>주소 *</label><input style={inputStyle} value={address} onChange={e => setAddress(e.target.value)} placeholder="서울시 강남구 ..." /></div>
+            <div>
+              <label style={labelStyle}>주소 *</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <input style={{ ...inputStyle, flex: 1 }} value={zonecode ? `(${zonecode}) ${address}` : ''} readOnly placeholder="우편번호 검색을 클릭하세요" />
+                <button type="button" onClick={openPostcode} style={{
+                  padding: '12px 20px', fontSize: 14, background: '#141413', color: '#fbfbfa',
+                  border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
+                }}>
+                  우편번호 검색
+                </button>
+              </div>
+              <input style={inputStyle} value={addressDetail} onChange={e => setAddressDetail(e.target.value)} placeholder="상세주소 입력 (동/호수 등)" />
+            </div>
             <div><label style={labelStyle}>메모 (선택)</label><textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={memo} onChange={e => setMemo(e.target.value)} placeholder="요청사항이 있으면 입력해주세요" /></div>
 
             <button onClick={handleGenerate} style={{
