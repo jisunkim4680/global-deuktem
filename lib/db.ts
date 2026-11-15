@@ -25,11 +25,24 @@ export interface Product {
 const PRODUCTS_KEY = 'data/products.json'
 const CONFIG_KEY = 'data/config.json'
 
+// 최신 blob URL 캐시
+const blobUrlCache = new Map<string, string>()
+
+async function getBlobUrl(key: string): Promise<string | null> {
+  const cached = blobUrlCache.get(key)
+  if (cached) return cached
+  const { blobs } = await list({ prefix: key, limit: 1 })
+  if (blobs.length === 0) return null
+  blobUrlCache.set(key, blobs[0].url)
+  return blobs[0].url
+}
+
 async function readBlob(key: string): Promise<string | null> {
   try {
-    const { blobs } = await list({ prefix: key })
-    if (blobs.length === 0) return null
-    const res = await fetch(blobs[0].url, { cache: 'no-store' })
+    const url = await getBlobUrl(key)
+    if (!url) return null
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) return null
     return await res.text()
   } catch {
     return null
@@ -37,17 +50,14 @@ async function readBlob(key: string): Promise<string | null> {
 }
 
 async function writeBlob(key: string, data: string): Promise<void> {
-  // 기존 blob URL 수집
-  let oldUrls: string[] = []
-  try {
-    const { blobs } = await list({ prefix: key })
-    oldUrls = blobs.map(b => b.url)
-  } catch {}
-  // 새 blob 먼저 저장
-  await put(key, data, { access: 'public' })
-  // 이전 blob 삭제
-  for (const url of oldUrls) {
-    try { await del(url) } catch {}
+  // 기존 blob 찾기
+  const { blobs } = await list({ prefix: key })
+  // 새 blob 저장
+  const newBlob = await put(key, data, { access: 'public' })
+  blobUrlCache.set(key, newBlob.url)
+  // 이전 blob 삭제 (백그라운드)
+  if (blobs.length > 0) {
+    Promise.all(blobs.map(b => del(b.url).catch(() => {}))).catch(() => {})
   }
 }
 
