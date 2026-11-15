@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { getProducts, saveProducts, Product } from '@/lib/db'
 import { COLOR_PRESETS } from '@/lib/colors'
-import { requireAuth } from '@/lib/auth'
+import { requireAuthFromReq } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
 

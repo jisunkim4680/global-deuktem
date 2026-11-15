@@ -16,7 +16,12 @@ export default function AdminPage() {
   const [filterBrand, setFilterBrand] = useState('')
 
   useEffect(() => {
-    fetch('/api/products').then(r => r.json()).then(setProducts)
+    fetch('/api/products', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setProducts(data)
+        else console.error('products API error:', data)
+      })
   }, [])
 
   const categories = [...new Set(products.map(p => p.category))].sort()

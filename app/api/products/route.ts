@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { put } from '@vercel/blob'
 import { getProducts, addProduct } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireAuthFromReq } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   let auth
-  try { auth = await requireAuth() } catch {
+  try { auth = requireAuthFromReq(req) } catch {
     return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
   }
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
 

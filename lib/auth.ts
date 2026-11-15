@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { NextRequest } from 'next/server'
 import crypto from 'crypto'
 
 const SECRET = process.env.AUTH_SECRET || 'global-deuktem-secret-key-2026'
@@ -8,7 +9,7 @@ function sign(role: string): string {
   return `${role}.${sig}`
 }
 
-function verify(token: string): string | null {
+export function verify(token: string): string | null {
   const [role, sig] = token.split('.')
   if (!role || !sig) return null
   const expected = crypto.createHmac('sha256', SECRET).update(role).digest('hex')
@@ -21,8 +22,20 @@ export function createToken(role: string): string {
 }
 
 export async function getAuthFromCookies(): Promise<{ token: string; role: string } | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('auth-token')?.value
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('auth-token')?.value
+    if (!token) return null
+    const role = verify(token)
+    if (!role) return null
+    return { token, role }
+  } catch {
+    return null
+  }
+}
+
+export function getAuthFromRequest(req: NextRequest): { token: string; role: string } | null {
+  const token = req.cookies.get('auth-token')?.value
   if (!token) return null
   const role = verify(token)
   if (!role) return null
@@ -31,6 +44,15 @@ export async function getAuthFromCookies(): Promise<{ token: string; role: strin
 
 export async function requireAuth(requiredRole?: string): Promise<{ token: string; role: string }> {
   const auth = await getAuthFromCookies()
+  if (!auth) throw new Error('로그인이 필요합니다')
+  if (requiredRole === 'admin' && auth.role !== 'admin') {
+    throw new Error('관리자 권한이 필요합니다')
+  }
+  return auth
+}
+
+export function requireAuthFromReq(req: NextRequest, requiredRole?: string): { token: string; role: string } {
+  const auth = getAuthFromRequest(req)
   if (!auth) throw new Error('로그인이 필요합니다')
   if (requiredRole === 'admin' && auth.role !== 'admin') {
     throw new Error('관리자 권한이 필요합니다')

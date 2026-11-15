@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getConfig, saveConfig } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireAuthFromReq } from '@/lib/auth'
 
 export async function PUT(req: NextRequest) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
   const { newPassword } = await req.json()

@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { put, del } from '@vercel/blob'
 import { getProduct, updateProduct, deleteProduct } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireAuthFromReq } from '@/lib/auth'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try { await requireAuth() } catch {
+  try { requireAuthFromReq(req) } catch {
     return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
   }
   const { id } = await params
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
   const { id } = await params
@@ -80,7 +80,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
   const { id } = await params
@@ -95,7 +95,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try { await requireAuth('admin') } catch (e: any) {
+  try { requireAuthFromReq(req, 'admin') } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 403 })
   }
   const { id } = await params
