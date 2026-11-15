@@ -2,17 +2,21 @@ import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 import crypto from 'crypto'
 
-const SECRET = process.env.AUTH_SECRET || 'global-deuktem-secret-key-2026'
+function getSecret(): string {
+  const secret = process.env.AUTH_SECRET
+  if (!secret) throw new Error('AUTH_SECRET 환경변수가 설정되지 않았습니다')
+  return secret
+}
 
 function sign(role: string): string {
-  const sig = crypto.createHmac('sha256', SECRET).update(role).digest('hex')
+  const sig = crypto.createHmac('sha256', getSecret()).update(role).digest('hex')
   return `${role}.${sig}`
 }
 
 export function verify(token: string): string | null {
   const [role, sig] = token.split('.')
   if (!role || !sig) return null
-  const expected = crypto.createHmac('sha256', SECRET).update(role).digest('hex')
+  const expected = crypto.createHmac('sha256', getSecret()).update(role).digest('hex')
   if (sig !== expected) return null
   return role
 }

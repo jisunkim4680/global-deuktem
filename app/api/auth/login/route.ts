@@ -9,13 +9,13 @@ export async function POST(req: NextRequest) {
   if (role === 'user' && password === config.userPassword) {
     const token = createToken('user')
     const res = NextResponse.json({ role: 'user' })
-    res.cookies.set('auth-token', token, { httpOnly: true, path: '/', sameSite: 'lax', maxAge: 60 * 60 * 24 })
+    res.cookies.set('auth-token', token, { httpOnly: true, secure: true, path: '/', sameSite: 'lax', maxAge: 60 * 60 * 24 })
     return res
   }
   if (role === 'admin' && password === config.adminPassword) {
     const token = createToken('admin')
     const res = NextResponse.json({ role: 'admin' })
-    res.cookies.set('auth-token', token, { httpOnly: true, path: '/', sameSite: 'lax', maxAge: 60 * 60 * 24 })
+    res.cookies.set('auth-token', token, { httpOnly: true, secure: true, path: '/', sameSite: 'lax', maxAge: 60 * 60 * 24 })
     return res
   }
 
