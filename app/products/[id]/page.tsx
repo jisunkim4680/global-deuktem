@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
+import Header from '@/components/Header'
 import { COLOR_PRESETS } from '@/lib/colors'
 import { isDiscountActive } from '@/lib/discount'
 import { addToCart } from '@/lib/cart'
@@ -37,9 +38,12 @@ function ProductContent() {
     })
   }, [id])
 
-  if (!product) return <div style={{ padding: 60, textAlign: 'center', color: '#8a8984' }}>로딩 중...</div>
+  if (!product) return <><Header /><div style={{ padding: 60, textAlign: 'center', color: '#8a8984' }}>로딩 중...</div></>
 
   return (
+    <>
+    <Header />
+    <main style={{ padding: '0 clamp(16px,2.4vw,36px)' }}>
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(24px,4vw,60px) 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 14, marginBottom: 24 }}>
         <a href="/products" style={{ textDecoration: 'none', color: '#6b6a66' }}>전체 상품</a>
@@ -193,12 +197,21 @@ function ProductContent() {
                 }} />
                 <div style={{ fontSize: 13, color: '#6b6a66', textAlign: 'center' }}>{item.brand}</div>
                 <div style={{ fontSize: 14, textAlign: 'center' }}>{item.name}</div>
+                <div style={{ fontSize: 13, color: '#3d3c39', textAlign: 'center', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
+                  {isDiscountActive(item.discountPrice, item.discountStart, item.discountEnd) ? (
+                    <><span style={{ color: '#c62828', fontWeight: 600 }}>₩{item.discountPrice!.toLocaleString()}</span> <span style={{ fontSize: 11, color: '#a3a29e', textDecoration: 'line-through' }}>₩{item.price.toLocaleString()}</span></>
+                  ) : (
+                    <>₩{item.price.toLocaleString()}</>
+                  )}
+                </div>
               </a>
             ))}
           </div>
         </div>
       )}
     </div>
+    </main>
+    </>
   )
 }
 

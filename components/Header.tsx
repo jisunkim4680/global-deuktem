@@ -7,11 +7,14 @@ import { getCartCount } from '@/lib/cart'
 
 interface HeaderProps {
   isAdmin?: boolean
+  onSearch?: (query: string) => void
+  showSearch?: boolean
 }
 
-export default function Header({ isAdmin }: HeaderProps) {
+export default function Header({ isAdmin, onSearch, showSearch }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -43,7 +46,14 @@ export default function Header({ isAdmin }: HeaderProps) {
         <a href="/products" style={{ textDecoration: 'none', color: '#141413', fontSize: 'clamp(20px,3.2vw,36px)', fontWeight: 700, letterSpacing: '0.18em', whiteSpace: 'nowrap', paddingLeft: '0.18em' }}>
           글로벌득템
         </a>
-        <nav style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 'clamp(12px,2.6vw,44px)', fontSize: 15 }}>
+        <nav style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 'clamp(10px,1.8vw,24px)', fontSize: 15 }}>
+          {showSearch && (
+            <input
+              type="text" placeholder="검색..." value={searchQuery}
+              onChange={e => { setSearchQuery(e.target.value); onSearch?.(e.target.value) }}
+              style={{ padding: '8px 12px', border: '1px solid #ecebe8', fontSize: 13, outline: 'none', width: 'clamp(100px,14vw,180px)' }}
+            />
+          )}
           {!isAdmin && (
             <a href="/cart" style={{ textDecoration: 'none', color: '#141413', fontSize: 15, display: 'flex', gap: 4 }}>
               장바구니{cartCount > 0 && <span style={{ fontVariantNumeric: 'tabular-nums' }}>({cartCount})</span>}

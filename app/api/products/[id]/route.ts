@@ -76,6 +76,30 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     images: allImages
   })
 
+  // 양방향 연관상품 연결
+  if (updated) {
+    const newRelated = updated.relatedProducts || []
+    const oldRelated = existing.relatedProducts || []
+    // 새로 추가된 연관상품에 현재 상품 추가
+    for (const rid of newRelated) {
+      if (!oldRelated.includes(rid)) {
+        const r = await getProduct(rid)
+        if (r && !r.relatedProducts.includes(id)) {
+          await updateProduct(rid, { relatedProducts: [...r.relatedProducts, id] })
+        }
+      }
+    }
+    // 제거된 연관상품에서 현재 상품 제거
+    for (const rid of oldRelated) {
+      if (!newRelated.includes(rid)) {
+        const r = await getProduct(rid)
+        if (r) {
+          await updateProduct(rid, { relatedProducts: r.relatedProducts.filter(x => x !== id) })
+        }
+      }
+    }
+  }
+
   return NextResponse.json(updated)
 }
 

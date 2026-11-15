@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/ProductGrid'
+import Header from '@/components/Header'
 import { isDiscountActive } from '@/lib/discount'
 import SaleSection from '@/components/SaleSection'
 
@@ -52,9 +53,10 @@ function ProductsContent() {
 
   return (
     <>
+      <Header showSearch onSearch={v => { setSearch(v); setShowCount(30) }} />
+      <main style={{ padding: '0 clamp(16px,2.4vw,36px)' }}>
       {discountProducts.length > 0 && activeCategory === '전체' && !activeBrand && !search && (
         <SaleSection products={discountProducts} />
-      )}
       )}
 
       <h1 style={{ fontSize: 'clamp(22px,2.2vw,28px)', fontWeight: 500, letterSpacing: '-0.02em', margin: 'clamp(24px,3.6vw,52px) 0 clamp(20px,3vw,40px)' }}>
@@ -104,10 +106,6 @@ function ProductsContent() {
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(16px,2.4vw,36px)', marginLeft: 'auto' }}>
-          <input
-            type="text" placeholder="검색..." value={search} onChange={e => setSearch(e.target.value)}
-            style={{ padding: '10px 14px', border: '1px solid #ecebe8', fontSize: 14, outline: 'none', width: 160 }}
-          />
           <span style={{ fontSize: 15, color: '#3d3c39' }}>{sorted.length} 제품</span>
           <div style={{ display: 'flex', border: '1px solid #141413' }}>
             {([['low', '낮은 가격순'], ['high', '높은 가격순']] as const).map(([v, label]) => (
@@ -141,6 +139,7 @@ function ProductsContent() {
           </button>
         </div>
       )}
+      </main>
     </>
   )
 }

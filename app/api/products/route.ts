@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { put } from '@vercel/blob'
-import { getProducts, addProduct } from '@/lib/db'
+import { getProducts, getProduct, addProduct, updateProduct } from '@/lib/db'
 import { requireAuthFromReq } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
@@ -86,5 +86,16 @@ export async function POST(req: NextRequest) {
   }
 
   await addProduct(product)
+
+  // 양방향 연관상품 연결
+  if (product.relatedProducts.length > 0) {
+    for (const rid of product.relatedProducts) {
+      const related = await getProduct(rid)
+      if (related && !related.relatedProducts.includes(product.id)) {
+        await updateProduct(rid, { relatedProducts: [...related.relatedProducts, product.id] })
+      }
+    }
+  }
+
   return NextResponse.json(product, { status: 201 })
 }
